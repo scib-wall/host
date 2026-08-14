@@ -23,30 +23,29 @@
       padding: 1rem;
       overflow-x: hidden;
       position: relative;
-      background: linear-gradient(-45deg, #030712, #075985, #1e3a8a, #0b1329);
+      background: linear-gradient(-45deg, #020617, #070e20, #0a1128, #030712);
       background-size: 300% 300%;
-      animation: vibrantBG 14s ease infinite;
+      animation: subtleBG 20s ease infinite;
     }
 
-    @keyframes vibrantBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    @keyframes subtleBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-    .host-container { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+    .host-container { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
 
-    /* CHIC TITLE */
     .game-title {
       font-size: clamp(1.4rem, 3.5vw, 2.6rem);
       font-family: 'Outfit', sans-serif;
       letter-spacing: 2px;
       display: flex; justify-content: center; flex-wrap: wrap; gap: 2px;
       text-transform: uppercase;
-      text-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      text-shadow: 0 4px 20px rgba(0,0,0,0.8);
     }
     .char {
       display: inline-block;
       font-weight: 900;
       background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      animation: subtleJump 2s infinite ease-in-out;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+      animation: subtleJump 2.5s infinite ease-in-out;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
     }
     .char:nth-child(4n+1) { background-image: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); animation-delay: 0.0s; }
     .char:nth-child(4n+2) { background-image: linear-gradient(135deg, #fca5a5 0%, #dc2626 100%); animation-delay: 0.15s; }
@@ -55,31 +54,47 @@
 
     @keyframes subtleJump { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
-    /* DASHBOARD & ARENA */
-    .timer { font-family: 'Outfit', sans-serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; letter-spacing: 1px; font-variant-numeric: tabular-nums; text-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+    .timer { font-family: 'Outfit', sans-serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; letter-spacing: 1px; font-variant-numeric: tabular-nums; text-shadow: 0 4px 20px rgba(0,0,0,0.6); }
     .timer.sudden-death { color: #ff2a5f; animation: pulseScale 0.6s infinite alternate ease-in-out; }
     @keyframes pulseScale { from { transform: scale(1); } to { transform: scale(1.08); } }
 
-    .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.15); padding: 16px 20px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+    /* iPhone 17 Dark Glass Look */
+    .dashboard { 
+      display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; 
+      background: rgba(13, 18, 30, 0.75); 
+      backdrop-filter: blur(30px) saturate(180%); 
+      -webkit-backdrop-filter: blur(30px) saturate(180%); 
+      border: 1px solid rgba(255, 255, 255, 0.12); 
+      padding: 18px 22px; border-radius: 28px; 
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12); 
+    }
     .score { font-family: 'Outfit', sans-serif; font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 900; }
-    .red-txt { color: #ff4655; text-shadow: 0 2px 10px rgba(255, 70, 85, 0.4); }
-    .blue-txt { color: #38bdf8; text-shadow: 0 2px 10px rgba(56, 189, 248, 0.4); }
+    .red-txt { color: #ff5263; text-shadow: 0 2px 10px rgba(255, 82, 99, 0.3); }
+    .blue-txt { color: #38bdf8; text-shadow: 0 2px 10px rgba(56, 189, 248, 0.3); }
 
     .roster-box {
-      margin-top: 6px;
-      background: rgba(3, 7, 18, 0.4);
-      border-radius: 12px;
-      padding: 8px 12px;
+      margin-top: 8px;
+      background: rgba(0, 0, 0, 0.35);
+      border-radius: 14px;
+      padding: 10px 14px;
       font-size: 0.85rem;
       max-height: 70px;
       overflow-y: auto;
       line-height: 1.4;
       text-align: center;
-      border: 1px solid rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.06);
     }
 
-    .arena { background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: clamp(25px, 4vw, 45px) 10px; border-radius: 24px; width: 100%; position: relative; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 20px 40px rgba(0,0,0,0.35); }
-    .center-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; background: rgba(255, 255, 255, 0.35); z-index: 1; }
+    .arena { 
+      background: rgba(13, 18, 30, 0.75); 
+      backdrop-filter: blur(30px) saturate(180%); 
+      -webkit-backdrop-filter: blur(30px) saturate(180%); 
+      padding: clamp(25px, 4vw, 45px) 10px; 
+      border-radius: 28px; width: 100%; position: relative; overflow: hidden; 
+      border: 1px solid rgba(255, 255, 255, 0.12); 
+      box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12); 
+    }
+    .center-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: rgba(255, 255, 255, 0.25); z-index: 1; }
     .rope-wrapper { display: flex; align-items: center; justify-content: center; transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1); position: relative; z-index: 2; }
     .real-rope { width: clamp(160px, 30vw, 320px); height: clamp(12px, 1.4vw, 16px); background: linear-gradient(90deg, #854d0e, #f59e0b, #854d0e); margin: 0 -8px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); position: relative; }
     .center-flag { position: absolute; top: -22px; left: 50%; transform: translateX(-50%); font-size: clamp(1.2rem, 2vw, 1.8rem); animation: flagWiggle 1.5s infinite alternate ease-in-out; }
@@ -93,30 +108,42 @@
     .jumping { animation: victoryJump 0.5s infinite alternate cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; }
     @keyframes victoryJump { from { transform: translateY(0) scale(1); } to { transform: translateY(-20px) scale(1.1); } }
 
-    /* CONTROLS */
     .controls { display: flex; gap: 10px; margin-top: 6px; flex-wrap: wrap; justify-content: center; }
-    button { padding: 12px 20px; font-family: 'Fredoka', sans-serif; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.5px; border-radius: 50px; cursor: pointer; transition: all 0.25s ease; backdrop-filter: blur(12px); box-shadow: 0 8px 20px rgba(0,0,0,0.25); }
-    button:hover { transform: translateY(-2px) scale(1.02); } button:active { transform: translateY(0) scale(0.96); }
-    .start-btn { background: rgba(34, 197, 94, 0.25); color: #ffffff; border: 1px solid rgba(34, 197, 94, 0.5); }
-    .end-btn { background: rgba(249, 115, 22, 0.25); color: #ffffff; border: 1px solid rgba(249, 115, 22, 0.5); }
-    .reset-btn { background: rgba(239, 68, 68, 0.25); color: #ffffff; border: 1px solid rgba(239, 68, 68, 0.5); }
-    .clear-roster-btn { background: rgba(168, 85, 247, 0.25); color: #e9d5ff; border: 1px solid rgba(168, 85, 247, 0.5); }
-    .winners-btn { background: linear-gradient(135deg, rgba(234, 179, 8, 0.4), rgba(202, 138, 4, 0.5)); color: #fef08a; border: 1px solid rgba(250, 204, 21, 0.7); text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+    button { 
+      padding: 12px 22px; 
+      font-family: 'Fredoka', sans-serif; 
+      font-size: 0.95rem; 
+      font-weight: 700; 
+      letter-spacing: 0.5px; 
+      border-radius: 50px; 
+      cursor: pointer; 
+      transition: all 0.25s ease; 
+      backdrop-filter: blur(16px); 
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3); 
+    }
+    button:hover { transform: translateY(-2px) scale(1.02); } 
+    button:active { transform: translateY(0) scale(0.96); }
 
-    /* SMOOTH OVERLAY MODALS */
+    .start-btn { background: rgba(34, 197, 94, 0.2); color: #ffffff; border: 1px solid rgba(34, 197, 94, 0.4); }
+    .end-btn { background: rgba(249, 115, 22, 0.2); color: #ffffff; border: 1px solid rgba(249, 115, 22, 0.4); }
+    .reset-btn { background: rgba(239, 68, 68, 0.2); color: #ffffff; border: 1px solid rgba(239, 68, 68, 0.4); }
+    .clear-roster-btn { background: rgba(168, 85, 247, 0.2); color: #e9d5ff; border: 1px solid rgba(168, 85, 247, 0.4); }
+    .winners-btn { background: linear-gradient(135deg, rgba(234, 179, 8, 0.35), rgba(202, 138, 4, 0.45)); color: #fef08a; border: 1px solid rgba(250, 204, 21, 0.5); text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
+
     .overlay-modal {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(3, 7, 18, 0.85);
+      background: rgba(2, 6, 23, 0.88);
       display: flex; flex-direction: column; justify-content: center; align-items: center;
       z-index: 999; opacity: 0; pointer-events: none;
       transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
       backdrop-filter: blur(0px);
     }
-    .overlay-modal.active { opacity: 1; pointer-events: auto; backdrop-filter: blur(16px); }
+    .overlay-modal.active { opacity: 1; pointer-events: auto; backdrop-filter: blur(20px); }
     
     .modal-card {
-      background: rgba(15, 23, 42, 0.85); border: 1px solid rgba(255, 255, 255, 0.2);
-      padding: 40px; border-radius: 28px; box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+      background: rgba(13, 18, 30, 0.85); 
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 40px; border-radius: 32px; box-shadow: 0 30px 60px rgba(0,0,0,0.7);
       transform: scale(0.9) translateY(20px);
       transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
       max-width: 90%;
@@ -140,7 +167,7 @@
       <h2 style="font-size: 2rem; margin-bottom: 20px; font-family: 'Outfit';">End Match Early?</h2>
       <div style="display: flex; gap: 15px; justify-content: center;">
         <button class="reset-btn" onclick="forceEndMatch()">YES, END IT</button>
-        <button style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);" onclick="document.getElementById('confirmEndOverlay').classList.remove('active')">CANCEL</button>
+        <button style="background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.25);" onclick="document.getElementById('confirmEndOverlay').classList.remove('active')">CANCEL</button>
       </div>
     </div>
   </div>
@@ -151,7 +178,7 @@
       <h1 id="endReason" style="font-family: 'Outfit', sans-serif; font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; color: #ffffff; margin-bottom: 8px;">MATCH OVER</h1>
       <p id="winnerText" style="font-size: 1.8rem; font-weight: 900;">Calculating Winner...</p>
       <div class="winner-names" id="winnerList"></div>
-      <button onclick="document.getElementById('timesUpOverlay').classList.remove('active')" style="margin-top: 25px; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);">CLOSE</button>
+      <button onclick="document.getElementById('timesUpOverlay').classList.remove('active')" style="margin-top: 25px; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.25);">CLOSE</button>
     </div>
   </div>
 
@@ -287,7 +314,7 @@
     };
 
     function startGame() {
-      let timeLeft = 120; // 2 Minutes
+      let timeLeft = 120;
       clearInterval(timerInterval); clearInterval(confettiInterval);
       set(gameRef, { status: "playing", ropePosition: 0, scoreRed: 0, scoreBlue: 0, timerSecs: 120 });
 
@@ -326,7 +353,7 @@
     };
 
     function processEndGame(reasonText, winnerStr) {
-      clearInterval(timerInterval); // Immediately stop background timer loop
+      clearInterval(timerInterval);
       currentWinner = winnerStr;
       
       const redScore = parseInt(document.getElementById("scoreRed").innerText) || 0;
@@ -350,7 +377,7 @@
       let namesStr = wNames.length > 0 ? `🌟 Congratulations: ${wNames.join(" • ")}` : "No players on winning team.";
 
       if (currentWinner === "A") {
-        teamA.classList.add("jumping"); winnerText.innerText = "🎉 TEAM RED WINS! 🎉"; winnerText.style.color = "#ff4655"; winnerList.innerText = namesStr; triggerVictoryFanfare();
+        teamA.classList.add("jumping"); winnerText.innerText = "🎉 TEAM RED WINS! 🎉"; winnerText.style.color = "#ff5263"; winnerList.innerText = namesStr; triggerVictoryFanfare();
       } else if (currentWinner === "B") {
         teamB.classList.add("jumping"); winnerText.innerText = "🎉 TEAM BLUE WINS! 🎉"; winnerText.style.color = "#38bdf8"; winnerList.innerText = namesStr; triggerVictoryFanfare();
       } else {
@@ -364,7 +391,6 @@
       playSound(523.25, "triangle", 0.3); setTimeout(() => playSound(659.25, "triangle", 0.3), 150); setTimeout(() => playSound(783.99, "triangle", 0.6), 300);
       clearInterval(confettiInterval); 
       
-      // Full confetti celebration burst
       confetti({ particleCount: 100, spread: 100, origin: { y: 0.5 } });
       confettiInterval = setInterval(() => { 
         confetti({ particleCount: 50, spread: 70, origin: { y: 0.6 } }); 
