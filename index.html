@@ -229,7 +229,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, onValue, set, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, onValue, onChildAdded, set, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const app = initializeApp({
       apiKey: "AIzaSyCS3yT10PtrUfFqvO4MhsZucgEatbSFKZY", authDomain: "tug-of-war-game-f18b3.firebaseapp.com",
@@ -238,8 +238,10 @@
     const db = getDatabase(app);
     const gameRef = ref(db, "game/state");
     const presenceRef = ref(db, "game/presence");
+    const pullsRef = ref(db, "game/pulls");
 
     let timerInterval = null, confettiInterval = null, lastPos = 0, currentPlayers = {}, currentWinner = "TIE";
+    let scoreRed = 0, scoreBlue = 0, ropePosition = 0, currentStatus = "waiting";
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playSound(freq, type, duration) {
@@ -250,6 +252,7 @@
       osc.stop(audioCtx.currentTime + duration);
     }
 
+    // Monitor Connected Roster
     onValue(presenceRef, (snapshot) => {
       currentPlayers = snapshot.val() || {};
       let redNames = [], blueNames = [];
@@ -267,18 +270,44 @@
       document.getElementById("rosterBlue").innerText = blueNames.length > 0 ? blueNames.join(", ") : "No players joined";
     });
 
+    // Sync Game State
     onValue(gameRef, (snapshot) => {
       const data = snapshot.val() || {};
-      const pos = data.ropePosition !== undefined ? data.ropePosition : 0;
-      
-      if (pos !== lastPos && data.status === 'playing') {
-        triggerPullFX(pos < lastPos ? "A" : "B");
+      currentStatus = data.status || "waiting";
+      ropePosition = data.ropePosition !== undefined ? data.ropePosition : 0;
+      scoreRed = data.scoreRed || 0;
+      scoreBlue = data.scoreBlue || 0;
+
+      document.getElementById("ropeWrapper").style.transform = `translateX(${(ropePosition / 100) * 35}%)`;
+      document.getElementById("scoreRed").innerText = scoreRed;
+      document.getElementById("scoreBlue").innerText = scoreBlue;
+    });
+
+    // EVENT QUEUE CONSUMER: Process incoming pulls without transactions or drops
+    onChildAdded(pullsRef, (snapshot) => {
+      const pull = snapshot.val();
+      if (!pull || currentStatus !== "playing") {
+        remove(snapshot.ref); // Discard unneeded pulls
+        return;
       }
-      
-      lastPos = pos;
-      document.getElementById("ropeWrapper").style.transform = `translateX(${(pos / 100) * 35}%)`;
-      document.getElementById("scoreRed").innerText = data.scoreRed || 0;
-      document.getElementById("scoreBlue").innerText = data.scoreBlue || 0;
+
+      const dir = pull.team === "A" ? -1 : 1;
+      ropePosition = Math.max(-100, Math.min(100, ropePosition + (pull.force * dir)));
+
+      if (pull.team === "A") scoreRed += pull.points;
+      if (pull.team === "B") scoreBlue += pull.points;
+
+      triggerPullFX(pull.team);
+
+      // Sync state back to Firebase
+      update(gameRef, {
+        ropePosition: ropePosition,
+        scoreRed: scoreRed,
+        scoreBlue: scoreBlue
+      });
+
+      // Remove processed pull from database
+      remove(snapshot.ref);
     });
 
     function triggerPullFX(team) {
@@ -294,8 +323,11 @@
       overlay.classList.add("active");
 
       let count = 3;
-      lastPos = 0;
+      ropePosition = 0; scoreRed = 0; scoreBlue = 0;
       document.getElementById("ropeWrapper").style.transform = "translateX(0%)";
+
+      // Wipe old pulls queue
+      await remove(pullsRef);
 
       await set(gameRef, { status: "countdown", countdownVal: count, ropePosition: 0, scoreRed: 0, scoreBlue: 0, timerSecs: 120 });
       text.innerText = count; playSound(440, "sine", 0.2);
@@ -320,7 +352,7 @@
       let timeLeft = 120;
       clearInterval(timerInterval); clearInterval(confettiInterval);
       
-      lastPos = 0;
+      ropePosition = 0; scoreRed = 0; scoreBlue = 0;
       document.getElementById("ropeWrapper").style.transform = "translateX(0%)";
       set(gameRef, { status: "playing", ropePosition: 0, scoreRed: 0, scoreBlue: 0, timerSecs: 120 });
 
@@ -328,14 +360,13 @@
         timeLeft--;
         updateTimerDisplay(timeLeft);
         
-        const rPos = lastPos;
         set(ref(db, "game/state/timerSecs"), timeLeft);
 
         if (timeLeft <= 0) {
-          processEndGame("TIME'S UP!", rPos < 0 ? "A" : (rPos > 0 ? "B" : "TIE"));
-        } else if (rPos <= -100) {
+          processEndGame("TIME'S UP!", ropePosition < 0 ? "A" : (ropePosition > 0 ? "B" : "TIE"));
+        } else if (ropePosition <= -100) {
           processEndGame("FLAG CAPTURED!", "A");
-        } else if (rPos >= 100) {
+        } else if (ropePosition >= 100) {
           processEndGame("FLAG CAPTURED!", "B");
         }
       }, 1000);
@@ -354,18 +385,14 @@
 
     window.forceEndMatch = function() {
       document.getElementById('confirmEndOverlay').classList.remove('active');
-      const rPos = lastPos;
-      processEndGame("MATCH ENDED", rPos < 0 ? "A" : (rPos > 0 ? "B" : "TIE"));
+      processEndGame("MATCH ENDED", ropePosition < 0 ? "A" : (ropePosition > 0 ? "B" : "TIE"));
     };
 
     function processEndGame(reasonText, winnerStr) {
       clearInterval(timerInterval);
       currentWinner = winnerStr;
       
-      const redScore = parseInt(document.getElementById("scoreRed").innerText) || 0;
-      const blueScore = parseInt(document.getElementById("scoreBlue").innerText) || 0;
-
-      set(gameRef, { status: "ended", winner: winnerStr, ropePosition: lastPos, scoreRed: redScore, scoreBlue: blueScore });
+      set(gameRef, { status: "ended", winner: winnerStr, ropePosition: ropePosition, scoreRed: scoreRed, scoreBlue: scoreBlue });
       
       document.getElementById("endReason").innerText = reasonText;
       window.proudlyPresentWinners();
@@ -406,7 +433,9 @@
     window.resetGame = function() {
       clearInterval(timerInterval); clearInterval(confettiInterval);
       currentWinner = "TIE";
-      lastPos = 0;
+      ropePosition = 0; scoreRed = 0; scoreBlue = 0;
+      
+      remove(pullsRef); // Clear queue
       
       document.getElementById("ropeWrapper").style.transform = "translateX(0%)";
       document.getElementById("timesUpOverlay").classList.remove("active");
