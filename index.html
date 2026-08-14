@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tug-of-War Host Arena</title>
+  <title>Phase Changes: Tug-of-War Host</title>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
@@ -11,7 +11,6 @@
     body { 
       font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
       text-align: center; 
-      background: #090d16; 
       color: #f8fafc; 
       min-height: 100vh;
       display: flex;
@@ -20,31 +19,71 @@
       padding: 2vw;
       overflow-x: hidden;
       position: relative;
+
+      /* MOVING ANIMATED GRADIENT BACKGROUND */
+      background: linear-gradient(-45deg, #090d16, #1e1b4b, #0f172a, #311042);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
     }
 
-    /* ANIMATED NEON BACKGROUND */
-    body::before {
-      content: '';
-      position: absolute;
-      top: -50%; left: -50%; width: 200%; height: 200%;
-      background: radial-gradient(circle, rgba(59,130,246,0.1) 0%, rgba(239,68,68,0.1) 50%, transparent 70%);
-      animation: rotateBg 20s linear infinite;
-      z-index: 0;
-      pointer-events: none;
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
-    @keyframes rotateBg { 100% { transform: rotate(360deg); } }
 
-    /* SPOTLIGHTS */
-    .spotlight-left, .spotlight-right {
-      position: absolute; top: 0; width: 30vw; height: 100vh;
-      pointer-events: none; opacity: 0.15; z-index: 0;
+    /* ANIMATED TITLE WRAPPER */
+    .game-title {
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 900;
+      letter-spacing: 2px;
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 2px;
     }
-    .spotlight-left { left: 0; background: linear-gradient(135deg, #ef4444, transparent 70%); }
-    .spotlight-right { right: 0; background: linear-gradient(-135deg, #3b82f6, transparent 70%); }
 
-    h1 { font-size: clamp(1.8rem, 4vw, 3rem); text-shadow: 0 0 20px rgba(255,255,255,0.3); z-index: 1; }
+    /* LETTER COLOR CYCLE & SELECTIVE GLOW */
+    .char {
+      display: inline-block;
+      animation: colorCycle 4s linear infinite;
+    }
 
-    /* RESPONSIVE TIMER */
+    /* Staggering the color timing for each letter */
+    .char:nth-child(1) { animation-delay: 0.0s; }
+    .char:nth-child(2) { animation-delay: 0.2s; }
+    .char:nth-child(3) { animation-delay: 0.4s; }
+    .char:nth-child(4) { animation-delay: 0.6s; }
+    .char:nth-child(5) { animation-delay: 0.8s; }
+    .char:nth-child(6) { animation-delay: 1.0s; }
+    .char:nth-child(7) { animation-delay: 1.2s; }
+    .char:nth-child(8) { animation-delay: 1.4s; }
+    .char:nth-child(9) { animation-delay: 1.6s; }
+    .char:nth-child(10) { animation-delay: 1.8s; }
+    .char:nth-child(11) { animation-delay: 2.0s; }
+    .char:nth-child(12) { animation-delay: 2.2s; }
+    .char:nth-child(13) { animation-delay: 2.4s; }
+    .char:nth-child(14) { animation-delay: 2.6s; }
+    .char:nth-child(15) { animation-delay: 2.8s; }
+    .char:nth-child(16) { animation-delay: 3.0s; }
+
+    /* GLOWING EFFECT ON SELECTIVE LETTERS ONLY */
+    .glow {
+      text-shadow: 0 0 12px currentColor, 0 0 24px currentColor;
+      font-weight: 900;
+    }
+
+    @keyframes colorCycle {
+      0% { color: #ef4444; }
+      20% { color: #f59e0b; }
+      40% { color: #10b981; }
+      60% { color: #3b82f6; }
+      80% { color: #8b5cf6; }
+      100% { color: #ef4444; }
+    }
+
+    /* TIMER */
     .timer { 
       font-size: clamp(2.5rem, 6vw, 4.5rem); 
       font-weight: 900; 
@@ -57,7 +96,7 @@
     .timer.sudden-death { color: #ef4444; text-shadow: 0 0 25px #ef4444; animation: flashRed 0.5s infinite alternate; }
     @keyframes flashRed { from { transform: scale(1); } to { transform: scale(1.1); } }
 
-    /* GLASSMORPHISM DASHBOARD */
+    /* DASHBOARD */
     .dashboard { 
       display: flex; 
       justify-content: space-around; 
@@ -76,7 +115,7 @@
     .red-txt { color: #ef4444; text-shadow: 0 0 15px rgba(239,68,68,0.5); }
     .blue-txt { color: #3b82f6; text-shadow: 0 0 15px rgba(59,130,246,0.5); }
 
-    /* RESPONSIVE ARENA */
+    /* ARENA */
     .arena { 
       background: rgba(15, 23, 42, 0.8); 
       padding: clamp(40px, 6vw, 80px) 10px; 
@@ -91,7 +130,7 @@
     }
     .center-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 4px; background: rgba(239,68,68,0.8); box-shadow: 0 0 10px #ef4444; z-index: 1; }
 
-    /* ROPE & ANIMATED AVATARS */
+    /* ROPE & CHARACTERS */
     .rope-wrapper { display: flex; align-items: center; justify-content: center; transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1); position: relative; z-index: 2; }
     
     .real-rope { 
@@ -108,7 +147,6 @@
     }
     @keyframes flagWiggle { from { transform: translateX(-50%) rotate(-5deg); } to { transform: translateX(-50%) rotate(5deg); } }
 
-    /* ANIMATED CHARACTER ICONS */
     .team-players { display: flex; gap: clamp(4px, 1vw, 12px); }
     .player-container { 
       position: relative; 
@@ -134,23 +172,19 @@
     button:active { transform: scale(0.95); }
     .start-btn { background: linear-gradient(135deg, #22c55e, #16a34a); color: white; box-shadow: 0 0 15px rgba(34,197,94,0.4); }
     .reset-btn { background: linear-gradient(135deg, #ef4444, #dc2626); color: white; box-shadow: 0 0 15px rgba(239,68,68,0.4); }
-
-    /* SHAKE EFFECT */
-    .shake { animation: arenaShake 0.25s cubic-bezier(.36,.07,.19,.97) both; }
-    @keyframes arenaShake {
-      10%, 90% { transform: translate3d(-4px, 0, 0); }
-      20%, 80% { transform: translate3d(6px, 0, 0); }
-      30%, 50%, 70% { transform: translate3d(-8px, 0, 0); }
-      40%, 60% { transform: translate3d(8px, 0, 0); }
-    }
   </style>
 </head>
-<body id="hostBody">
+<body>
 
-  <div class="spotlight-left"></div>
-  <div class="spotlight-right"></div>
+  <!-- ANIMATED COLOR TITLE WITH SELECTIVE GLOW -->
+  <div class="game-title">
+    <span class="char glow">P</span><span class="char">H</span><span class="char glow">A</span><span class="char">S</span><span class="char">E</span>
+    <span class="char">&nbsp;</span>
+    <span class="char glow">C</span><span class="char">H</span><span class="char">A</span><span class="char">N</span><span class="char glow">G</span><span class="char">E</span><span class="char">S</span><span class="char">:</span>
+    <span class="char">&nbsp;</span>
+    <span class="char glow">T</span><span class="char">U</span><span class="char">G</span><span class="char">-</span><span class="char">O</span><span class="char">-</span><span class="char glow">W</span><span class="char">A</span><span class="char">R</span>
+  </div>
 
-  <h1>🏆 CLASSROOM TUG-OF-WAR ARENA</h1>
   <div class="timer" id="timerDisplay">03:00</div>
 
   <div class="dashboard">
@@ -253,10 +287,6 @@
     });
 
     function triggerPullFX(pullingTeam) {
-      const body = document.getElementById("hostBody");
-      body.classList.add("shake");
-      setTimeout(() => body.classList.remove("shake"), 250);
-
       const teamA = document.getElementById("teamAAvatars");
       const teamB = document.getElementById("teamBAvatars");
 
