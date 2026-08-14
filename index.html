@@ -7,131 +7,132 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&display=swap" rel="stylesheet">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     
     body { 
-      font-family: 'Plus Jakarta Sans', sans-serif; 
+      font-family: 'Outfit', sans-serif; 
       text-align: center; 
       color: #f8fafc; 
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      padding: 2.5vw;
+      justify-content: center;
+      align-items: center;
+      padding: 1rem;
       overflow-x: hidden;
       position: relative;
 
-      /* LUXURY DEEP MOVING GRADIENT */
-      background: linear-gradient(-45deg, #030712, #0f172a, #111827, #1e112a);
-      background-size: 400% 400%;
-      animation: luxuryBG 18s ease infinite;
+      /* SUBTLE ANIMATED BACKGROUND */
+      background: linear-gradient(-45deg, #0b0f19, #111827, #1e1b4b, #0f172a);
+      background-size: 300% 300%;
+      animation: smoothBG 16s ease infinite;
     }
 
-    @keyframes luxuryBG {
+    @keyframes smoothBG {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
       100% { background-position: 0% 50%; }
     }
 
-    /* EXPENSIVE LOOKING SERIF TITLE */
+    /* MAIN WRAPPER TO KEEP EVERYTHING CONTAINED */
+    .host-container {
+      width: 100%;
+      max-width: 850px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      align-items: center;
+    }
+
+    /* MODERN COMPACT TITLE */
     .game-title {
-      font-family: 'Cinzel', serif;
-      font-size: clamp(2rem, 4vw, 3.2rem);
+      font-size: clamp(1.2rem, 2.5vw, 2rem);
       font-weight: 900;
-      letter-spacing: 6px;
-      margin-bottom: 15px;
+      letter-spacing: 2px;
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
-      gap: 2px;
+      gap: 1px;
       text-transform: uppercase;
     }
 
-    /* ELEGANT CLEAN COLOR CYCLE (NO GLOW) */
     .char {
       display: inline-block;
-      animation: luxuryColorCycle 6s ease-in-out infinite;
+      animation: colorShift 5s ease-in-out infinite;
     }
 
     .char:nth-child(1) { animation-delay: 0.0s; }
-    .char:nth-child(2) { animation-delay: 0.2s; }
-    .char:nth-child(3) { animation-delay: 0.4s; }
-    .char:nth-child(4) { animation-delay: 0.6s; }
-    .char:nth-child(5) { animation-delay: 0.8s; }
-    .char:nth-child(6) { animation-delay: 1.0s; }
-    .char:nth-child(7) { animation-delay: 1.2s; }
-    .char:nth-child(8) { animation-delay: 1.4s; }
-    .char:nth-child(9) { animation-delay: 1.6s; }
-    .char:nth-child(10) { animation-delay: 1.8s; }
-    .char:nth-child(11) { animation-delay: 2.0s; }
-    .char:nth-child(12) { animation-delay: 2.2s; }
-    .char:nth-child(13) { animation-delay: 2.4s; }
-    .char:nth-child(14) { animation-delay: 2.6s; }
-    .char:nth-child(15) { animation-delay: 2.8s; }
-    .char:nth-child(16) { animation-delay: 3.0s; }
+    .char:nth-child(2) { animation-delay: 0.15s; }
+    .char:nth-child(3) { animation-delay: 0.3s; }
+    .char:nth-child(4) { animation-delay: 0.45s; }
+    .char:nth-child(5) { animation-delay: 0.6s; }
+    .char:nth-child(6) { animation-delay: 0.75s; }
+    .char:nth-child(7) { animation-delay: 0.9s; }
+    .char:nth-child(8) { animation-delay: 1.05s; }
+    .char:nth-child(9) { animation-delay: 1.2s; }
+    .char:nth-child(10) { animation-delay: 1.35s; }
+    .char:nth-child(11) { animation-delay: 1.5s; }
+    .char:nth-child(12) { animation-delay: 1.65s; }
+    .char:nth-child(13) { animation-delay: 1.8s; }
+    .char:nth-child(14) { animation-delay: 1.95s; }
+    .char:nth-child(15) { animation-delay: 2.1s; }
+    .char:nth-child(16) { animation-delay: 2.25s; }
 
-    @keyframes luxuryColorCycle {
+    @keyframes colorShift {
       0% { color: #f8fafc; }
-      25% { color: #f31260; }
+      25% { color: #fb7185; }
       50% { color: #38bdf8; }
-      75% { color: #a855f7; }
+      75% { color: #c084fc; }
       100% { color: #f8fafc; }
     }
 
     /* TIMER DISPLAY */
     .timer { 
-      font-size: clamp(2.5rem, 5vw, 4rem); 
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem); 
       font-weight: 800; 
       color: #f1f5f9; 
-      font-family: 'Cinzel', serif;
-      letter-spacing: 4px;
-      z-index: 1; 
+      letter-spacing: 2px;
+      font-variant-numeric: tabular-nums;
       transition: all 0.3s;
     }
-    .timer.sudden-death { color: #f31260; animation: pulseScale 0.6s infinite alternate ease-in-out; }
-    @keyframes pulseScale { from { transform: scale(1); } to { transform: scale(1.08); } }
+    .timer.sudden-death { color: #f43f5e; animation: pulseScale 0.6s infinite alternate ease-in-out; }
+    @keyframes pulseScale { from { transform: scale(1); } to { transform: scale(1.05); } }
 
-    /* DASHBOARD GLASSMORPHISM */
+    /* COMPACT DASHBOARD */
     .dashboard { 
       display: flex; 
       justify-content: space-around; 
       width: 100%;
-      max-width: 950px; 
-      margin: 15px auto; 
-      background: rgba(15, 23, 42, 0.55); 
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      padding: clamp(15px, 2.5vw, 25px); 
-      border-radius: 24px; 
-      box-shadow: 0 30px 60px rgba(0,0,0,0.4);
-      z-index: 1;
+      background: rgba(15, 23, 42, 0.6); 
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 12px 20px; 
+      border-radius: 16px; 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
     }
-    .score { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800; font-family: 'Cinzel', serif; }
-    .red-txt { color: #f31260; }
-    .blue-txt { color: #006fee; }
+    .score { font-size: clamp(1.8rem, 3.5vw, 2.5rem); font-weight: 800; }
+    .red-txt { color: #f43f5e; }
+    .blue-txt { color: #38bdf8; }
 
-    /* ARENA CONTAINER */
+    /* COMPACT ARENA */
     .arena { 
-      background: rgba(15, 23, 42, 0.45); 
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      padding: clamp(40px, 6vw, 80px) 10px; 
-      margin: 15px auto; 
-      border-radius: 28px; 
+      background: rgba(15, 23, 42, 0.5); 
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      padding: clamp(25px, 4vw, 45px) 10px; 
+      border-radius: 20px; 
       width: 100%;
-      max-width: 1050px; 
       position: relative; 
       overflow: hidden; 
       border: 1px solid rgba(255, 255, 255, 0.08);
-      box-shadow: 0 30px 60px rgba(0,0,0,0.5);
-      z-index: 1;
+      box-shadow: 0 15px 35px rgba(0,0,0,0.4);
     }
     .center-line { 
       position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; 
-      background: linear-gradient(180deg, transparent, rgba(243,18,96,0.6), transparent); 
+      background: rgba(244, 63, 94, 0.5); 
       z-index: 1; 
     }
 
@@ -139,108 +140,109 @@
     .rope-wrapper { display: flex; align-items: center; justify-content: center; transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1); position: relative; z-index: 2; }
     
     .real-rope { 
-      width: clamp(200px, 40vw, 450px); 
-      height: clamp(12px, 1.8vw, 20px); 
+      width: clamp(160px, 30vw, 320px); 
+      height: clamp(10px, 1.2vw, 14px); 
       background: linear-gradient(90deg, #78350f, #d97706, #78350f);
-      margin: 0 -10px; border-radius: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.5); position: relative;
+      margin: 0 -8px; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.4); position: relative;
     }
 
     .center-flag { 
-      position: absolute; top: -32px; left: 50%; transform: translateX(-50%); 
-      font-size: clamp(1.8rem, 3vw, 2.5rem); 
+      position: absolute; top: -22px; left: 50%; transform: translateX(-50%); 
+      font-size: clamp(1.2rem, 2vw, 1.8rem); 
       animation: flagWiggle 1.5s infinite alternate ease-in-out; 
     }
     @keyframes flagWiggle { from { transform: translateX(-50%) rotate(-6deg); } to { transform: translateX(-50%) rotate(6deg); } }
 
-    .team-players { display: flex; gap: clamp(4px, 1vw, 12px); }
+    .team-players { display: flex; gap: clamp(2px, 0.8vw, 8px); }
     .player-container { 
       position: relative; 
-      font-size: clamp(2rem, 4vw, 3.5rem); 
+      font-size: clamp(1.5rem, 3vw, 2.5rem); 
       display: inline-block; 
       transition: transform 0.3s ease;
       animation: idleBob 2s infinite alternate ease-in-out;
     }
-    @keyframes idleBob { from { transform: translateY(0); } to { transform: translateY(-5px); } }
+    @keyframes idleBob { from { transform: translateY(0); } to { transform: translateY(-4px); } }
 
-    .pull-left .player-container { transform: rotate(-18deg) translateX(-8px) scale(1.08); }
-    .pull-right .player-container { transform: rotate(18deg) translateX(8px) scale(1.08); }
+    .pull-left .player-container { transform: rotate(-15deg) translateX(-6px) scale(1.05); }
+    .pull-right .player-container { transform: rotate(15deg) translateX(6px) scale(1.05); }
 
     .jumping { animation: victoryJump 0.5s infinite alternate cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; }
-    @keyframes victoryJump { from { transform: translateY(0) scale(1); } to { transform: translateY(-30px) scale(1.15); } }
+    @keyframes victoryJump { from { transform: translateY(0) scale(1); } to { transform: translateY(-20px) scale(1.1); } }
 
     /* CONTROLS */
-    .controls { z-index: 1; }
+    .controls { display: flex; gap: 8px; margin-top: 4px; }
     button { 
-      padding: clamp(12px, 1.5vw, 16px) clamp(24px, 3vw, 36px); 
-      font-family: 'Plus Jakarta Sans', sans-serif;
-      font-size: clamp(0.9rem, 1.2vw, 1.1rem); 
+      padding: 10px 20px; 
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem; 
       font-weight: 700; 
-      letter-spacing: 1px;
-      border: 1px solid rgba(255,255,255,0.15); 
-      border-radius: 100px; 
+      letter-spacing: 0.5px;
+      border: 1px solid rgba(255,255,255,0.12); 
+      border-radius: 50px; 
       cursor: pointer; 
-      margin: 6px; 
-      transition: all 0.25s ease; 
-      backdrop-filter: blur(10px);
+      transition: all 0.2s ease; 
+      backdrop-filter: blur(8px);
     }
     button:hover { transform: translateY(-2px); }
     button:active { transform: translateY(0) scale(0.96); }
-    .start-btn { background: rgba(24, 201, 100, 0.2); color: #17c964; border-color: rgba(23, 201, 100, 0.4); }
-    .start-btn:hover { background: rgba(24, 201, 100, 0.35); }
-    .reset-btn { background: rgba(243, 18, 96, 0.2); color: #f31260; border-color: rgba(243, 18, 96, 0.4); }
-    .reset-btn:hover { background: rgba(243, 18, 96, 0.35); }
+    .start-btn { background: rgba(34, 197, 94, 0.2); color: #4ade80; border-color: rgba(34, 197, 94, 0.3); }
+    .start-btn:hover { background: rgba(34, 197, 94, 0.35); }
+    .reset-btn { background: rgba(244, 63, 94, 0.2); color: #fb7185; border-color: rgba(244, 63, 94, 0.3); }
+    .reset-btn:hover { background: rgba(244, 63, 94, 0.35); }
   </style>
 </head>
 <body>
 
-  <!-- ELEGANT TITLE (NO GLOW) -->
-  <div class="game-title">
-    <span class="char">P</span><span class="char">H</span><span class="char">A</span><span class="char">S</span><span class="char">E</span>
-    <span class="char">&nbsp;</span>
-    <span class="char">C</span><span class="char">H</span><span class="char">A</span><span class="char">N</span><span class="char">G</span><span class="char">E</span><span class="char">S</span><span class="char">:</span>
-    <span class="char">&nbsp;</span>
-    <span class="char">T</span><span class="char">U</span><span class="char">G</span><span class="char">-</span><span class="char">O</span><span class="char">-</span><span class="char">W</span><span class="char">A</span><span class="char">R</span>
-  </div>
-
-  <div class="timer" id="timerDisplay">03:00</div>
-
-  <div class="dashboard">
-    <div>
-      <div class="red-txt" style="font-size: clamp(0.9rem, 1.5vw, 1.2rem); font-weight: 800; letter-spacing: 2px;">TEAM RED</div>
-      <div class="score red-txt" id="scoreRed">0</div>
-      <div id="playersRed" style="opacity: 0.6; font-weight: 600;">0 Players</div>
+  <div class="host-container">
+    <!-- TITLE -->
+    <div class="game-title">
+      <span class="char">P</span><span class="char">H</span><span class="char">A</span><span class="char">S</span><span class="char">E</span>
+      <span class="char">&nbsp;</span>
+      <span class="char">C</span><span class="char">H</span><span class="char">A</span><span class="char">N</span><span class="char">G</span><span class="char">E</span><span class="char">S</span><span class="char">:</span>
+      <span class="char">&nbsp;</span>
+      <span class="char">T</span><span class="char">U</span><span class="char">G</span><span class="char">-</span><span class="char">O</span><span class="char">-</span><span class="char">W</span><span class="char">A</span><span class="char">R</span>
     </div>
-    <div>
-      <div class="blue-txt" style="font-size: clamp(0.9rem, 1.5vw, 1.2rem); font-weight: 800; letter-spacing: 2px;">TEAM BLUE</div>
-      <div class="score blue-txt" id="scoreBlue">0</div>
-      <div id="playersBlue" style="opacity: 0.6; font-weight: 600;">0 Players</div>
-    </div>
-  </div>
 
-  <div class="arena">
-    <div class="center-line"></div>
-    <div class="rope-wrapper" id="ropeWrapper">
-      <div class="team-players" id="teamAAvatars">
-        <div class="player-container">🏃‍♂️</div>
-        <div class="player-container">🤼‍♀️</div>
-        <div class="player-container">🏃‍♂️</div>
+    <div class="timer" id="timerDisplay">03:00</div>
+
+    <div class="dashboard">
+      <div>
+        <div class="red-txt" style="font-size: 0.85rem; font-weight: 800; letter-spacing: 1px;">TEAM RED</div>
+        <div class="score red-txt" id="scoreRed">0</div>
+        <div id="playersRed" style="opacity: 0.6; font-weight: 600; font-size: 0.8rem;">0 Players</div>
       </div>
-
-      <div class="real-rope" id="realRope">
-        <div class="center-flag">🚩</div>
-      </div>
-
-      <div class="team-players" id="teamBAvatars">
-        <div class="player-container">🏃‍♀️</div>
-        <div class="player-container">🤼‍♂️</div>
-        <div class="player-container">🏃‍♀️</div>
+      <div>
+        <div class="blue-txt" style="font-size: 0.85rem; font-weight: 800; letter-spacing: 1px;">TEAM BLUE</div>
+        <div class="score blue-txt" id="scoreBlue">0</div>
+        <div id="playersBlue" style="opacity: 0.6; font-weight: 600; font-size: 0.8rem;">0 Players</div>
       </div>
     </div>
-  </div>
 
-  <div class="controls">
-    <button class="start-btn" onclick="startGame()">▶ START MATCH</button>
-    <button class="reset-btn" onclick="resetGame()">🔄 RESET MATCH</button>
+    <div class="arena">
+      <div class="center-line"></div>
+      <div class="rope-wrapper" id="ropeWrapper">
+        <div class="team-players" id="teamAAvatars">
+          <div class="player-container">🏃‍♂️</div>
+          <div class="player-container">🤼‍♀️</div>
+          <div class="player-container">🏃‍♂️</div>
+        </div>
+
+        <div class="real-rope" id="realRope">
+          <div class="center-flag">🚩</div>
+        </div>
+
+        <div class="team-players" id="teamBAvatars">
+          <div class="player-container">🏃‍♀️</div>
+          <div class="player-container">🤼‍♂️</div>
+          <div class="player-container">🏃‍♀️</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button class="start-btn" onclick="startGame()">▶ START MATCH</button>
+      <button class="reset-btn" onclick="resetGame()">🔄 RESET</button>
+    </div>
   </div>
 
   <script type="module">
@@ -363,7 +365,7 @@
       setTimeout(() => playSound(783.99, "triangle", 0.6), 300);
 
       clearInterval(confettiInterval);
-      confettiInterval = setInterval(() => { confetti({ particleCount: 50, spread: 70, origin: { y: 0.6 } }); }, 600);
+      confettiInterval = setInterval(() => { confetti({ particleCount: 40, spread: 60, origin: { y: 0.6 } }); }, 600);
     }
 
     function getLatestState() {
