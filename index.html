@@ -23,9 +23,9 @@
       padding: 1rem;
       overflow-x: hidden;
       position: relative;
-      background: linear-gradient(-45deg, #020617, #070e20, #0a1128, #030712);
+      background: linear-gradient(-45deg, #450a0a, #0a1128, #0369a1, #2e1065);
       background-size: 300% 300%;
-      animation: subtleBG 20s ease infinite;
+      animation: subtleBG 16s ease infinite;
     }
 
     @keyframes subtleBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
@@ -58,15 +58,14 @@
     .timer.sudden-death { color: #ff2a5f; animation: pulseScale 0.6s infinite alternate ease-in-out; }
     @keyframes pulseScale { from { transform: scale(1); } to { transform: scale(1.08); } }
 
-    /* iPhone 17 Dark Glass Look */
     .dashboard { 
       display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; 
-      background: rgba(13, 18, 30, 0.75); 
-      backdrop-filter: blur(30px) saturate(180%); 
-      -webkit-backdrop-filter: blur(30px) saturate(180%); 
-      border: 1px solid rgba(255, 255, 255, 0.12); 
+      background: rgba(15, 23, 42, 0.7); 
+      backdrop-filter: blur(28px) saturate(160%); 
+      -webkit-backdrop-filter: blur(28px) saturate(160%); 
+      border: 1px solid rgba(255, 255, 255, 0.15); 
       padding: 18px 22px; border-radius: 28px; 
-      box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12); 
+      box-shadow: 0 25px 50px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.18); 
     }
     .score { font-family: 'Outfit', sans-serif; font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 900; }
     .red-txt { color: #ff5263; text-shadow: 0 2px 10px rgba(255, 82, 99, 0.3); }
@@ -82,19 +81,19 @@
       overflow-y: auto;
       line-height: 1.4;
       text-align: center;
-      border: 1px solid rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
     }
 
     .arena { 
-      background: rgba(13, 18, 30, 0.75); 
-      backdrop-filter: blur(30px) saturate(180%); 
-      -webkit-backdrop-filter: blur(30px) saturate(180%); 
+      background: rgba(15, 23, 42, 0.7); 
+      backdrop-filter: blur(28px) saturate(160%); 
+      -webkit-backdrop-filter: blur(28px) saturate(160%); 
       padding: clamp(25px, 4vw, 45px) 10px; 
       border-radius: 28px; width: 100%; position: relative; overflow: hidden; 
-      border: 1px solid rgba(255, 255, 255, 0.12); 
-      box-shadow: 0 25px 50px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.12); 
+      border: 1px solid rgba(255, 255, 255, 0.15); 
+      box-shadow: 0 25px 50px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.18); 
     }
-    .center-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: rgba(255, 255, 255, 0.25); z-index: 1; }
+    .center-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: rgba(255, 255, 255, 0.3); z-index: 1; }
     .rope-wrapper { display: flex; align-items: center; justify-content: center; transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1); position: relative; z-index: 2; }
     .real-rope { width: clamp(160px, 30vw, 320px); height: clamp(12px, 1.4vw, 16px); background: linear-gradient(90deg, #854d0e, #f59e0b, #854d0e); margin: 0 -8px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); position: relative; }
     .center-flag { position: absolute; top: -22px; left: 50%; transform: translateX(-50%); font-size: clamp(1.2rem, 2vw, 1.8rem); animation: flagWiggle 1.5s infinite alternate ease-in-out; }
@@ -132,7 +131,7 @@
 
     .overlay-modal {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(2, 6, 23, 0.88);
+      background: rgba(15, 23, 42, 0.88);
       display: flex; flex-direction: column; justify-content: center; align-items: center;
       z-index: 999; opacity: 0; pointer-events: none;
       transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
@@ -141,9 +140,9 @@
     .overlay-modal.active { opacity: 1; pointer-events: auto; backdrop-filter: blur(20px); }
     
     .modal-card {
-      background: rgba(13, 18, 30, 0.85); 
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      padding: 40px; border-radius: 32px; box-shadow: 0 30px 60px rgba(0,0,0,0.7);
+      background: rgba(15, 23, 42, 0.85); 
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      padding: 40px; border-radius: 32px; box-shadow: 0 30px 60px rgba(0,0,0,0.6);
       transform: scale(0.9) translateY(20px);
       transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
       max-width: 90%;
@@ -270,12 +269,13 @@
 
     onValue(gameRef, (snapshot) => {
       const data = snapshot.val() || {};
-      const pos = data.ropePosition || 0;
+      const pos = data.ropePosition !== undefined ? data.ropePosition : 0;
       
       if (pos !== lastPos && data.status === 'playing') {
         triggerPullFX(pos < lastPos ? "A" : "B");
-        lastPos = pos;
       }
+      
+      lastPos = pos;
       document.getElementById("ropeWrapper").style.transform = `translateX(${(pos / 100) * 35}%)`;
       document.getElementById("scoreRed").innerText = data.scoreRed || 0;
       document.getElementById("scoreBlue").innerText = data.scoreBlue || 0;
@@ -294,6 +294,9 @@
       overlay.classList.add("active");
 
       let count = 3;
+      lastPos = 0;
+      document.getElementById("ropeWrapper").style.transform = "translateX(0%)";
+
       await set(gameRef, { status: "countdown", countdownVal: count, ropePosition: 0, scoreRed: 0, scoreBlue: 0, timerSecs: 120 });
       text.innerText = count; playSound(440, "sine", 0.2);
 
@@ -316,6 +319,9 @@
     function startGame() {
       let timeLeft = 120;
       clearInterval(timerInterval); clearInterval(confettiInterval);
+      
+      lastPos = 0;
+      document.getElementById("ropeWrapper").style.transform = "translateX(0%)";
       set(gameRef, { status: "playing", ropePosition: 0, scoreRed: 0, scoreBlue: 0, timerSecs: 120 });
 
       timerInterval = setInterval(() => {
@@ -401,11 +407,14 @@
       clearInterval(timerInterval); clearInterval(confettiInterval);
       currentWinner = "TIE";
       lastPos = 0;
+      
+      document.getElementById("ropeWrapper").style.transform = "translateX(0%)";
       document.getElementById("timesUpOverlay").classList.remove("active");
       document.getElementById("confirmEndOverlay").classList.remove("active");
       document.getElementById("countdownOverlay").classList.remove("active");
       document.getElementById("timerDisplay").className = "timer"; document.getElementById("timerDisplay").innerText = "02:00";
       document.getElementById("teamAAvatars").classList.remove("jumping"); document.getElementById("teamBAvatars").classList.remove("jumping");
+      
       set(gameRef, { status: "waiting", ropePosition: 0, scoreRed: 0, scoreBlue: 0, timerSecs: 120 });
     };
 
