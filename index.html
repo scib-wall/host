@@ -30,7 +30,7 @@
 
     @keyframes vibrantBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-    .host-container { width: 100%; max-width: 850px; display: flex; flex-direction: column; gap: 12px; align-items: center; }
+    .host-container { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 12px; align-items: center; }
 
     /* PREMIUM SHINY TITLE */
     .game-title {
@@ -48,10 +48,10 @@
       animation: subtleJump 2s infinite ease-in-out;
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
     }
-    .char:nth-child(4n+1) { background-image: linear-gradient(135deg, #fde047 0%, #ca8a04 100%); animation-delay: 0.0s; } /* Gold */
-    .char:nth-child(4n+2) { background-image: linear-gradient(135deg, #fca5a5 0%, #dc2626 100%); animation-delay: 0.15s; } /* Ruby */
-    .char:nth-child(4n+3) { background-image: linear-gradient(135deg, #93c5fd 0%, #2563eb 100%); animation-delay: 0.3s; } /* Sapphire */
-    .char:nth-child(4n+4) { background-image: linear-gradient(135deg, #86efac 0%, #16a34a 100%); animation-delay: 0.45s; } /* Emerald */
+    .char:nth-child(4n+1) { background-image: linear-gradient(135deg, #fde047 0%, #ca8a04 100%); animation-delay: 0.0s; }
+    .char:nth-child(4n+2) { background-image: linear-gradient(135deg, #fca5a5 0%, #dc2626 100%); animation-delay: 0.15s; }
+    .char:nth-child(4n+3) { background-image: linear-gradient(135deg, #93c5fd 0%, #2563eb 100%); animation-delay: 0.3s; }
+    .char:nth-child(4n+4) { background-image: linear-gradient(135deg, #86efac 0%, #16a34a 100%); animation-delay: 0.45s; }
 
     @keyframes subtleJump { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
 
@@ -60,10 +60,23 @@
     .timer.sudden-death { color: #ff2a5f; animation: pulseScale 0.6s infinite alternate ease-in-out; }
     @keyframes pulseScale { from { transform: scale(1); } to { transform: scale(1.08); } }
 
-    .dashboard { display: flex; justify-content: space-around; width: 100%; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.18); padding: 12px 20px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
+    .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.18); padding: 16px 20px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
     .score { font-family: 'Outfit', sans-serif; font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 900; }
     .red-txt { color: #ff4655; text-shadow: 0 2px 10px rgba(255, 70, 85, 0.4); }
     .blue-txt { color: #3b82f6; text-shadow: 0 2px 10px rgba(59, 130, 246, 0.4); }
+
+    .roster-box {
+      margin-top: 6px;
+      background: rgba(0, 0, 0, 0.25);
+      border-radius: 12px;
+      padding: 8px 12px;
+      font-size: 0.85rem;
+      max-height: 70px;
+      overflow-y: auto;
+      line-height: 1.4;
+      text-align: center;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
 
     .arena { background: rgba(255, 255, 255, 0.06); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); padding: clamp(25px, 4vw, 45px) 10px; border-radius: 24px; width: 100%; position: relative; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 20px 40px rgba(0,0,0,0.35); }
     .center-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 3px; background: rgba(255, 255, 255, 0.35); z-index: 1; }
@@ -81,12 +94,13 @@
     @keyframes victoryJump { from { transform: translateY(0) scale(1); } to { transform: translateY(-20px) scale(1.1); } }
 
     /* CONTROLS */
-    .controls { display: flex; gap: 10px; margin-top: 6px; }
+    .controls { display: flex; gap: 10px; margin-top: 6px; flex-wrap: wrap; justify-content: center; }
     button { padding: 12px 20px; font-family: 'Fredoka', sans-serif; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.5px; border-radius: 50px; cursor: pointer; transition: all 0.25s ease; backdrop-filter: blur(12px); box-shadow: 0 8px 20px rgba(0,0,0,0.25); }
     button:hover { transform: translateY(-2px) scale(1.02); } button:active { transform: translateY(0) scale(0.96); }
     .start-btn { background: rgba(34, 197, 94, 0.25); color: #ffffff; border: 1px solid rgba(34, 197, 94, 0.5); }
     .end-btn { background: rgba(249, 115, 22, 0.25); color: #ffffff; border: 1px solid rgba(249, 115, 22, 0.5); }
     .reset-btn { background: rgba(239, 68, 68, 0.25); color: #ffffff; border: 1px solid rgba(239, 68, 68, 0.5); }
+    .winners-btn { background: linear-gradient(135deg, rgba(234, 179, 8, 0.4), rgba(202, 138, 4, 0.5)); color: #fef08a; border: 1px solid rgba(250, 204, 21, 0.7); text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
 
     /* SMOOTH OVERLAY MODALS */
     .overlay-modal {
@@ -111,7 +125,7 @@
     .countdown-number { font-family: 'Outfit', sans-serif; font-size: clamp(6rem, 18vw, 12rem); font-weight: 900; color: #ffffff; text-shadow: 0 10px 40px rgba(0,0,0,0.6); animation: popZoom 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite; }
     @keyframes popZoom { 0% { transform: scale(0.4); opacity: 0; } 40% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
 
-    .winner-names { margin-top: 15px; font-size: 1.1rem; color: #cbd5e1; max-width: 500px; line-height: 1.4; }
+    .winner-names { margin-top: 15px; font-size: 1.3rem; color: #fef08a; max-width: 500px; line-height: 1.5; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
   </style>
 </head>
 <body>
@@ -134,7 +148,7 @@
   <div class="overlay-modal" id="timesUpOverlay">
     <div class="modal-card">
       <h1 id="endReason" style="font-family: 'Outfit', sans-serif; font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; color: #ffffff; margin-bottom: 8px;">MATCH OVER</h1>
-      <p id="winnerText" style="font-size: 1.5rem; font-weight: 700;">Calculating Winner...</p>
+      <p id="winnerText" style="font-size: 1.8rem; font-weight: 900;">Calculating Winner...</p>
       <div class="winner-names" id="winnerList"></div>
       <button onclick="document.getElementById('timesUpOverlay').classList.remove('active')" style="margin-top: 25px; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3);">CLOSE</button>
     </div>
@@ -153,12 +167,14 @@
       <div>
         <div class="red-txt" style="font-size: 0.9rem; font-weight: 700; letter-spacing: 1px;">TEAM RED</div>
         <div class="score red-txt" id="scoreRed">0</div>
-        <div id="playersRed" style="opacity: 0.8; font-size: 0.8rem;">0 Players</div>
+        <div id="playersRedCount" style="opacity: 0.8; font-size: 0.8rem; font-weight: 700;">0 Players</div>
+        <div class="roster-box red-txt" id="rosterRed">Waiting for players...</div>
       </div>
       <div>
         <div class="blue-txt" style="font-size: 0.9rem; font-weight: 700; letter-spacing: 1px;">TEAM BLUE</div>
         <div class="score blue-txt" id="scoreBlue">0</div>
-        <div id="playersBlue" style="opacity: 0.8; font-size: 0.8rem;">0 Players</div>
+        <div id="playersBlueCount" style="opacity: 0.8; font-size: 0.8rem; font-weight: 700;">0 Players</div>
+        <div class="roster-box blue-txt" id="rosterBlue">Waiting for players...</div>
       </div>
     </div>
 
@@ -179,12 +195,13 @@
       <button class="start-btn" onclick="triggerStartSequence()">▶ START</button>
       <button class="end-btn" onclick="document.getElementById('confirmEndOverlay').classList.add('active')">🛑 END</button>
       <button class="reset-btn" onclick="resetGame()">🔄 RESET</button>
+      <button class="winners-btn" onclick="proudlyPresentWinners()">🏆 SHOW WINNERS</button>
     </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, onValue, set, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
     const app = initializeApp({
       apiKey: "AIzaSyCS3yT10PtrUfFqvO4MhsZucgEatbSFKZY", authDomain: "tug-of-war-game-f18b3.firebaseapp.com",
@@ -194,7 +211,7 @@
     const gameRef = ref(db, "game/state");
     const presenceRef = ref(db, "game/presence");
 
-    let timerInterval = null, confettiInterval = null, lastPos = 0, currentPlayers = {};
+    let timerInterval = null, confettiInterval = null, lastPos = 0, currentPlayers = {}, currentWinner = "TIE";
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     function playSound(freq, type, duration) {
@@ -207,10 +224,19 @@
 
     onValue(presenceRef, (snapshot) => {
       currentPlayers = snapshot.val() || {};
-      let red = 0, blue = 0;
-      Object.values(currentPlayers).forEach(p => { if (p.team === "A") red++; else blue++; });
-      document.getElementById("playersRed").innerText = `${red} Players`;
-      document.getElementById("playersBlue").innerText = `${blue} Players`;
+      let redNames = [], blueNames = [];
+      Object.values(currentPlayers).forEach(p => { 
+        if (p.name) {
+          if (p.team === "A") redNames.push(p.name); 
+          else blueNames.push(p.name);
+        }
+      });
+
+      document.getElementById("playersRedCount").innerText = `${redNames.length} Players`;
+      document.getElementById("playersBlueCount").innerText = `${blueNames.length} Players`;
+
+      document.getElementById("rosterRed").innerText = redNames.length > 0 ? redNames.join(", ") : "No players joined";
+      document.getElementById("rosterBlue").innerText = blueNames.length > 0 ? blueNames.join(", ") : "No players joined";
     });
 
     onValue(gameRef, (snapshot) => {
@@ -267,10 +293,9 @@
         timeLeft--;
         updateTimerDisplay(timeLeft);
         
-        const rPos = lastPos; // captured from onValue
+        const rPos = lastPos;
         set(ref(db, "game/state/timerSecs"), timeLeft);
 
-        // Win conditions: Time out OR Flag Captured
         if (timeLeft <= 0) {
           processEndGame("TIME'S UP!", rPos < 0 ? "A" : (rPos > 0 ? "B" : "TIE"));
         } else if (rPos <= -100) {
@@ -300,9 +325,14 @@
 
     function processEndGame(reasonText, winnerStr) {
       clearInterval(timerInterval);
+      currentWinner = winnerStr;
       set(ref(db, "game/state"), { ...getLatestState(), status: "ended", winner: winnerStr });
       
       document.getElementById("endReason").innerText = reasonText;
+      window.proudlyPresentWinners();
+    }
+
+    window.proudlyPresentWinners = function() {
       const winnerText = document.getElementById("winnerText");
       const winnerList = document.getElementById("winnerList");
       
@@ -310,23 +340,29 @@
       const teamB = document.getElementById("teamBAvatars");
       
       let wNames = [];
-      Object.values(currentPlayers).forEach(p => { if (p.team === winnerStr && p.name) wNames.push(p.name); });
-      let namesStr = wNames.length > 0 ? `🏆 Winners: ${wNames.join(", ")}` : "Great job everyone!";
+      Object.values(currentPlayers).forEach(p => { if (p.team === currentWinner && p.name) wNames.push(p.name); });
+      let namesStr = wNames.length > 0 ? `🌟 Congratulations: ${wNames.join(" • ")}` : "No players on winning team.";
 
-      if (winnerStr === "A") {
-        teamA.classList.add("jumping"); winnerText.innerText = "TEAM RED WINS!"; winnerText.style.color = "#ff4655"; winnerList.innerText = namesStr; triggerVictoryFanfare();
-      } else if (winnerStr === "B") {
-        teamB.classList.add("jumping"); winnerText.innerText = "TEAM BLUE WINS!"; winnerText.style.color = "#3b82f6"; winnerList.innerText = namesStr; triggerVictoryFanfare();
+      if (currentWinner === "A") {
+        teamA.classList.add("jumping"); winnerText.innerText = "🎉 TEAM RED WINS! 🎉"; winnerText.style.color = "#ff4655"; winnerList.innerText = namesStr; triggerVictoryFanfare();
+      } else if (currentWinner === "B") {
+        teamB.classList.add("jumping"); winnerText.innerText = "🎉 TEAM BLUE WINS! 🎉"; winnerText.style.color = "#3b82f6"; winnerList.innerText = namesStr; triggerVictoryFanfare();
       } else {
-        winnerText.innerText = "🤝 IT'S A TIE!"; winnerText.style.color = "#ffffff"; winnerList.innerText = "";
+        winnerText.innerText = "🤝 IT'S A TIE!"; winnerText.style.color = "#ffffff"; winnerList.innerText = "Both teams fought bravely!";
       }
       
       document.getElementById("timesUpOverlay").classList.add("active");
-    }
+    };
 
     function triggerVictoryFanfare() {
       playSound(523.25, "triangle", 0.3); setTimeout(() => playSound(659.25, "triangle", 0.3), 150); setTimeout(() => playSound(783.99, "triangle", 0.6), 300);
-      clearInterval(confettiInterval); confettiInterval = setInterval(() => { confetti({ particleCount: 40, spread: 60, origin: { y: 0.6 } }); }, 600);
+      clearInterval(confettiInterval); 
+      
+      // Full confetti celebration burst
+      confetti({ particleCount: 100, spread: 100, origin: { y: 0.5 } });
+      confettiInterval = setInterval(() => { 
+        confetti({ particleCount: 50, spread: 70, origin: { y: 0.6 } }); 
+      }, 500);
     }
 
     function getLatestState() {
@@ -335,6 +371,7 @@
 
     window.resetGame = function() {
       clearInterval(timerInterval); clearInterval(confettiInterval);
+      currentWinner = "TIE";
       document.getElementById("timesUpOverlay").classList.remove("active");
       document.getElementById("confirmEndOverlay").classList.remove("active");
       document.getElementById("countdownOverlay").classList.remove("active");
