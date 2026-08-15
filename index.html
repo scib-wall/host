@@ -188,7 +188,7 @@
       <span class="char">T</span><span class="char">U</span><span class="char">G</span><span class="char">&nbsp;</span><span class="char">O</span><span class="char">F</span><span class="char">&nbsp;</span><span class="char">W</span><span class="char">A</span><span class="char">R</span>
     </div>
 
-    <div class="timer" id="timerDisplay">02:00</div>
+    <div class="timer" id="timerDisplay">03:00</div>
 
     <div class="dashboard">
       <div>
@@ -346,7 +346,7 @@
 
       await remove(pullsRef).catch(errCatch);
 
-      await set(gameRef, { status: "countdown", countdownVal: count, ropePosition: 0, scoreRed: 0, scoreBlue: 0, timerSecs: 120 }).catch(errCatch);
+      await set(gameRef, { status: "countdown", countdownVal: count, ropePosition: 0, scoreRed: 0, scoreBlue: 0, timerSecs: 180 }).catch(errCatch);
       text.innerText = count; playSound(440, "sine", 0.2);
 
       const countInterval = setInterval(async () => {
@@ -366,12 +366,12 @@
     };
 
     function startGame() {
-      let timeLeft = 120;
+      let timeLeft = 180;
       clearInterval(timerInterval); clearInterval(confettiInterval);
       
       ropePosition = 0; scoreRed = 0; scoreBlue = 0;
       document.getElementById("ropeWrapper").style.transform = "translateX(0%)";
-      set(gameRef, { status: "playing", ropePosition: 0, scoreRed: 0, scoreBlue: 0, timerSecs: 120 }).catch(errCatch);
+      set(gameRef, { status: "playing", ropePosition: 0, scoreRed: 0, scoreBlue: 0, timerSecs: 180 }).catch(errCatch);
 
       timerInterval = setInterval(() => {
         timeLeft--;
@@ -458,10 +458,10 @@
       document.getElementById("timesUpOverlay").classList.remove("active");
       document.getElementById("confirmEndOverlay").classList.remove("active");
       document.getElementById("countdownOverlay").classList.remove("active");
-      document.getElementById("timerDisplay").className = "timer"; document.getElementById("timerDisplay").innerText = "02:00";
+      document.getElementById("timerDisplay").className = "timer"; document.getElementById("timerDisplay").innerText = "03:00";
       document.getElementById("teamAAvatars").classList.remove("jumping"); document.getElementById("teamBAvatars").classList.remove("jumping");
       
-      set(gameRef, { status: "waiting", ropePosition: 0, scoreRed: 0, scoreBlue: 0, timerSecs: 120 }).catch(errCatch);
+      set(gameRef, { status: "waiting", ropePosition: 0, scoreRed: 0, scoreBlue: 0, timerSecs: 180 }).catch(errCatch);
     };
 
     window.clearRoster = function() {
