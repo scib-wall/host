@@ -287,7 +287,7 @@
       document.getElementById("scoreBlue").innerText = scoreBlue;
     }, errCatch);
 
-    // Process incoming pulls
+    // Process incoming pulls with per-capita normalization
     onChildAdded(pullsRef, (snapshot) => {
       const pull = snapshot.val();
       if (!pull || currentStatus !== "playing") {
@@ -295,8 +295,24 @@
         return;
       }
 
+      // Count active players on each team to prevent team-size advantages
+      let redSize = 0;
+      let blueSize = 0;
+      Object.values(currentPlayers).forEach(p => {
+        if (p.team === "A") redSize++;
+        else if (p.team === "B") blueSize++;
+      });
+
+      // Normalize team sizes so division by zero never occurs
+      redSize = Math.max(redSize, 1);
+      blueSize = Math.max(blueSize, 1);
+
       const dir = pull.team === "A" ? -1 : 1;
-      ropePosition = Math.max(-100, Math.min(100, ropePosition + (pull.force * dir)));
+      const teamSize = pull.team === "A" ? redSize : blueSize;
+
+      // Scale rope force per-capita based on the team's total size
+      const normalizedForce = (pull.force / teamSize) * dir;
+      ropePosition = Math.max(-100, Math.min(100, ropePosition + normalizedForce));
 
       if (pull.team === "A") scoreRed += pull.points;
       if (pull.team === "B") scoreBlue += pull.points;
