@@ -240,7 +240,7 @@
     const presenceRef = ref(db, "game/presence");
     const pullsRef = ref(db, "game/pulls");
 
-    let timerInterval = null, confettiInterval = null, lastPos = 0, currentPlayers = {}, currentWinner = "TIE";
+    let timerInterval = null, confettiInterval = null, currentPlayers = {}, currentWinner = "TIE";
     let scoreRed = 0, scoreBlue = 0, ropePosition = 0, currentStatus = "waiting";
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
