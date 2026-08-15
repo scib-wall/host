@@ -129,36 +129,131 @@
     .clear-roster-btn { background: rgba(168, 85, 247, 0.2); color: #e9d5ff; border: 1px solid rgba(168, 85, 247, 0.4); }
     .winners-btn { background: linear-gradient(135deg, rgba(234, 179, 8, 0.35), rgba(202, 138, 4, 0.45)); color: #fef08a; border: 1px solid rgba(250, 204, 21, 0.5); text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
 
+    /* OVERLAY MODAL BASE */
     .overlay-modal {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(15, 23, 42, 0.88);
+      background: rgba(10, 15, 30, 0.92);
       display: flex; flex-direction: column; justify-content: center; align-items: center;
       z-index: 999; opacity: 0; pointer-events: none;
       transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
       backdrop-filter: blur(0px);
     }
-    .overlay-modal.active { opacity: 1; pointer-events: auto; backdrop-filter: blur(20px); }
-    
-    .modal-card {
-      background: rgba(15, 23, 42, 0.85); 
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      padding: 40px; border-radius: 32px; box-shadow: 0 30px 60px rgba(0,0,0,0.6);
-      transform: scale(0.9) translateY(20px);
-      transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-      max-width: 90%;
+    .overlay-modal.active { opacity: 1; pointer-events: auto; backdrop-filter: blur(25px); }
+
+    /* DRAMATIC COUNTDOWN EFFECTS */
+    .countdown-ring {
+      position: absolute;
+      width: clamp(240px, 40vw, 400px);
+      height: clamp(240px, 40vw, 400px);
+      border-radius: 50%;
+      border: 4px stroke rgba(255, 255, 255, 0.1);
+      border-top: 4px solid #38bdf8;
+      border-right: 4px solid #ef4444;
+      border-bottom: 4px solid #facc15;
+      animation: spinRing 2s linear infinite;
+      box-shadow: 0 0 50px rgba(56, 189, 248, 0.3);
     }
-    .overlay-modal.active .modal-card { transform: scale(1) translateY(0); }
+    @keyframes spinRing { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    .countdown-number { font-family: 'Outfit', sans-serif; font-size: clamp(6rem, 18vw, 12rem); font-weight: 900; color: #ffffff; text-shadow: 0 10px 40px rgba(0,0,0,0.6); animation: popZoom 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275) infinite; }
-    @keyframes popZoom { 0% { transform: scale(0.4); opacity: 0; } 40% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+    .countdown-number { 
+      font-family: 'Outfit', sans-serif; 
+      font-size: clamp(7rem, 22vw, 15rem); 
+      font-weight: 900; 
+      color: #ffffff; 
+      text-shadow: 0 0 50px rgba(255,255,255,0.8), 0 10px 40px rgba(0,0,0,0.9); 
+      position: relative;
+      z-index: 2;
+    }
+    .countdown-anim {
+      animation: dramaticBoom 0.85s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+    }
+    @keyframes dramaticBoom { 
+      0% { transform: scale(3.5) rotate(-10deg); opacity: 0; filter: blur(20px); } 
+      35% { transform: scale(0.95) rotate(0deg); opacity: 1; filter: blur(0px); } 
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); opacity: 1; } 
+    }
 
-    .winner-names { margin-top: 15px; font-size: 1.3rem; color: #fef08a; max-width: 500px; line-height: 1.5; font-weight: 700; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+    /* DRAMATIC WINNER POPUP EFFECTS */
+    .modal-card {
+      background: rgba(15, 23, 42, 0.95); 
+      border: 2px solid rgba(255, 255, 255, 0.2);
+      padding: clamp(30px, 5vw, 50px); 
+      border-radius: 36px; 
+      box-shadow: 0 30px 80px rgba(0,0,0,0.8);
+      transform: scale(0.6) translateY(50px) rotate(-3deg);
+      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      max-width: 90%;
+      width: 550px;
+      position: relative;
+      overflow: hidden;
+    }
+    .overlay-modal.active .modal-card { transform: scale(1) translateY(0) rotate(0deg); }
+
+    .winner-card-red {
+      border-color: #ff5263 !important;
+      box-shadow: 0 0 80px rgba(255, 82, 99, 0.4), inset 0 0 30px rgba(255, 82, 99, 0.2) !important;
+    }
+    .winner-card-blue {
+      border-color: #38bdf8 !important;
+      box-shadow: 0 0 80px rgba(56, 189, 248, 0.4), inset 0 0 30px rgba(56, 189, 248, 0.2) !important;
+    }
+    .winner-card-tie {
+      border-color: #a855f7 !important;
+      box-shadow: 0 0 80px rgba(168, 85, 247, 0.4), inset 0 0 30px rgba(168, 85, 247, 0.2) !important;
+    }
+
+    .trophy-badge {
+      font-size: clamp(3.5rem, 8vw, 5.5rem);
+      margin-bottom: 10px;
+      display: inline-block;
+      animation: badgeBounce 1s infinite alternate cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
+    }
+    @keyframes badgeBounce { from { transform: translateY(0) scale(1) rotate(-5deg); } to { transform: translateY(-12px) scale(1.15) rotate(5deg); } }
+
+    .winner-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      margin-bottom: 6px;
+    }
+
+    .winner-names { 
+      margin-top: 20px; 
+      font-size: 1.25rem; 
+      color: #fef08a; 
+      max-width: 100%; 
+      line-height: 1.6; 
+      font-weight: 700; 
+      text-shadow: 0 2px 10px rgba(0,0,0,0.6); 
+      background: rgba(0, 0, 0, 0.4);
+      padding: 16px 20px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .rays-bg {
+      position: absolute;
+      top: -50%; left: -50%;
+      width: 200%; height: 200%;
+      background: conic-gradient(from 0deg, transparent 0deg 30deg, rgba(255,255,255,0.03) 30deg 60deg);
+      animation: rotateRays 20s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes rotateRays { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 
   <!-- COUNTDOWN OVERLAY -->
-  <div class="overlay-modal" id="countdownOverlay"><div class="countdown-number" id="countdownText">3</div></div>
+  <div class="overlay-modal" id="countdownOverlay">
+    <div class="countdown-ring"></div>
+    <div class="countdown-number" id="countdownText">3</div>
+  </div>
 
   <!-- CONFIRM END MODAL -->
   <div class="overlay-modal" id="confirmEndOverlay">
@@ -173,11 +268,13 @@
 
   <!-- MATCH OVER MODAL -->
   <div class="overlay-modal" id="timesUpOverlay">
-    <div class="modal-card">
-      <h1 id="endReason" style="font-family: 'Outfit', sans-serif; font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; color: #ffffff; margin-bottom: 8px;">MATCH OVER</h1>
-      <p id="winnerText" style="font-size: 1.8rem; font-weight: 900;">Calculating Winner...</p>
+    <div class="modal-card" id="winnerModalCard">
+      <div class="rays-bg"></div>
+      <div class="trophy-badge" id="modalEmoji">🏆</div>
+      <h1 id="endReason" style="font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 800; color: rgba(255,255,255,0.7); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4px;">MATCH OVER</h1>
+      <div class="winner-title" id="winnerText">TEAM RED WINS!</div>
       <div class="winner-names" id="winnerList"></div>
-      <button onclick="document.getElementById('timesUpOverlay').classList.remove('active')" style="margin-top: 25px; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.25);">CLOSE</button>
+      <button onclick="document.getElementById('timesUpOverlay').classList.remove('active')" style="margin-top: 25px; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); width: 100%; padding: 14px 0; font-size: 1.1rem;">CONTINUE</button>
     </div>
   </div>
 
@@ -246,12 +343,28 @@
     let scoreRed = 0, scoreBlue = 0, ropePosition = 0, currentStatus = "waiting";
 
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    function playSound(freq, type, duration) {
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
-      osc.type = type; osc.frequency.value = freq; osc.connect(gain); gain.connect(audioCtx.destination);
-      osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
-      osc.stop(audioCtx.currentTime + duration);
+    
+    function playSound(freq, type, duration, vol = 1.0) {
+      try {
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
+        osc.type = type; osc.frequency.value = freq; 
+        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
+    }
+
+    function playDramaticCountdownBeep(isGo = false) {
+      if (isGo) {
+        playSound(523.25, "square", 0.15, 0.8);
+        setTimeout(() => playSound(659.25, "square", 0.15, 0.8), 80);
+        setTimeout(() => playSound(783.99, "triangle", 0.4, 1.0), 160);
+      } else {
+        playSound(180, "sawtooth", 0.25, 0.9);
+        playSound(360, "sine", 0.25, 0.6);
+      }
     }
 
     const errCatch = () => {};
@@ -295,22 +408,18 @@
         return;
       }
 
-      // Count active players on each team to prevent team-size advantages
-      let redSize = 0;
-      let blueSize = 0;
+      let redSize = 0, blueSize = 0;
       Object.values(currentPlayers).forEach(p => {
         if (p.team === "A") redSize++;
         else if (p.team === "B") blueSize++;
       });
 
-      // Normalize team sizes so division by zero never occurs
       redSize = Math.max(redSize, 1);
       blueSize = Math.max(blueSize, 1);
 
       const dir = pull.team === "A" ? -1 : 1;
       const teamSize = pull.team === "A" ? redSize : blueSize;
 
-      // Scale rope force per-capita based on the team's total size
       const normalizedForce = (pull.force / teamSize) * dir;
       ropePosition = Math.max(-100, Math.min(100, ropePosition + normalizedForce));
 
@@ -331,10 +440,11 @@
     function triggerPullFX(team) {
       const t = document.getElementById(team === "A" ? "teamAAvatars" : "teamBAvatars");
       t.classList.add(team === "A" ? "pull-left" : "pull-right");
-      playSound(120, "sawtooth", 0.12);
+      playSound(120, "sawtooth", 0.12, 0.5);
       setTimeout(() => { t.classList.remove("pull-left", "pull-right"); }, 300);
     }
 
+    // ENHANCED DRAMATIC COUNTDOWN
     window.triggerStartSequence = async function() {
       const overlay = document.getElementById("countdownOverlay");
       const text = document.getElementById("countdownText");
@@ -345,17 +455,27 @@
       document.getElementById("ropeWrapper").style.transform = "translateX(0%)";
 
       await remove(pullsRef).catch(errCatch);
-
       await set(gameRef, { status: "countdown", countdownVal: count, ropePosition: 0, scoreRed: 0, scoreBlue: 0, timerSecs: 180 }).catch(errCatch);
-      text.innerText = count; playSound(440, "sine", 0.2);
+
+      const renderCount = (val) => {
+        text.classList.remove("countdown-anim");
+        void text.offsetWidth; // Force CSS Reflow
+        text.innerText = val;
+        text.classList.add("countdown-anim");
+      };
+
+      renderCount(count); 
+      playDramaticCountdownBeep(false);
 
       const countInterval = setInterval(async () => {
         count--;
         if (count > 0) {
-          text.innerText = count; playSound(440, "sine", 0.2);
+          renderCount(count); 
+          playDramaticCountdownBeep(false);
           set(ref(db, "game/state/countdownVal"), count).catch(errCatch);
         } else if (count === 0) {
-          text.innerText = "GO!"; playSound(880, "triangle", 0.4);
+          renderCount("GO!"); 
+          playDramaticCountdownBeep(true);
           set(ref(db, "game/state/countdownVal"), "GO").catch(errCatch);
         } else {
           clearInterval(countInterval);
@@ -415,36 +535,82 @@
       window.proudlyPresentWinners();
     }
 
+    // ENHANCED DRAMATIC WINNER POPUP & MANUAL "SHOW WINNERS"
     window.proudlyPresentWinners = function() {
+      // Calculate current leader dynamically if clicked manually mid-game/reset
+      if (currentWinner === "TIE" || currentStatus !== "ended") {
+        if (ropePosition < 0) currentWinner = "A";
+        else if (ropePosition > 0) currentWinner = "B";
+        else currentWinner = "TIE";
+      }
+
       const winnerText = document.getElementById("winnerText");
       const winnerList = document.getElementById("winnerList");
+      const modalCard = document.getElementById("winnerModalCard");
+      const modalEmoji = document.getElementById("modalEmoji");
       
       const teamA = document.getElementById("teamAAvatars");
       const teamB = document.getElementById("teamBAvatars");
+
+      teamA.classList.remove("jumping");
+      teamB.classList.remove("jumping");
+      modalCard.classList.remove("winner-card-red", "winner-card-blue", "winner-card-tie");
       
       let wNames = [];
       Object.values(currentPlayers).forEach(p => { if (p.team === currentWinner && p.name) wNames.push(p.name); });
-      let namesStr = wNames.length > 0 ? `🌟 Congratulations: ${wNames.join(" • ")}` : "No players on winning team.";
+      let namesStr = wNames.length > 0 ? `🌟 Champions: ${wNames.join(" • ")}` : "No registered players on winning team.";
 
       if (currentWinner === "A") {
-        teamA.classList.add("jumping"); winnerText.innerText = "🎉 TEAM RED WINS! 🎉"; winnerText.style.color = "#ff5263"; winnerList.innerText = namesStr; triggerVictoryFanfare();
+        teamA.classList.add("jumping"); 
+        modalCard.classList.add("winner-card-red");
+        modalEmoji.innerText = "🏆";
+        winnerText.innerText = "TEAM RED WINS!"; 
+        winnerText.style.color = "#ff5263"; 
+        winnerList.innerText = namesStr; 
+        triggerVictoryFanfare("A");
       } else if (currentWinner === "B") {
-        teamB.classList.add("jumping"); winnerText.innerText = "🎉 TEAM BLUE WINS! 🎉"; winnerText.style.color = "#38bdf8"; winnerList.innerText = namesStr; triggerVictoryFanfare();
+        teamB.classList.add("jumping"); 
+        modalCard.classList.add("winner-card-blue");
+        modalEmoji.innerText = "🏆";
+        winnerText.innerText = "TEAM BLUE WINS!"; 
+        winnerText.style.color = "#38bdf8"; 
+        winnerList.innerText = namesStr; 
+        triggerVictoryFanfare("B");
       } else {
-        winnerText.innerText = "🤝 IT'S A TIE!"; winnerText.style.color = "#ffffff"; winnerList.innerText = "Both teams fought bravely!";
+        modalCard.classList.add("winner-card-tie");
+        modalEmoji.innerText = "🤝";
+        winnerText.innerText = "IT'S A TIE!"; 
+        winnerText.style.color = "#e9d5ff"; 
+        winnerList.innerText = "An unbelievable standoff! Both teams matched each other force for force!";
+        triggerVictoryFanfare("TIE");
       }
       
       document.getElementById("timesUpOverlay").classList.add("active");
     };
 
-    function triggerVictoryFanfare() {
-      playSound(523.25, "triangle", 0.3); setTimeout(() => playSound(659.25, "triangle", 0.3), 150); setTimeout(() => playSound(783.99, "triangle", 0.6), 300);
+    function triggerVictoryFanfare(winner) {
       clearInterval(confettiInterval); 
+
+      if (winner === "TIE") {
+        playSound(300, "sine", 0.4, 0.8);
+        setTimeout(() => playSound(400, "sine", 0.5, 0.8), 200);
+        return;
+      }
+
+      // Multi-note dramatic fanfare
+      playSound(523.25, "triangle", 0.25, 0.9);
+      setTimeout(() => playSound(659.25, "triangle", 0.25, 0.9), 120);
+      setTimeout(() => playSound(783.99, "triangle", 0.25, 0.9), 240);
+      setTimeout(() => playSound(1046.50, "triangle", 0.7, 1.0), 360);
       
-      confetti({ particleCount: 100, spread: 100, origin: { y: 0.5 } });
+      const colors = winner === "A" ? ['#ff5263', '#ffffff', '#dc2626'] : ['#38bdf8', '#ffffff', '#2563eb'];
+
+      confetti({ particleCount: 120, spread: 100, origin: { y: 0.5 }, colors: colors });
+      
       confettiInterval = setInterval(() => { 
-        confetti({ particleCount: 50, spread: 70, origin: { y: 0.6 } }); 
-      }, 500);
+        confetti({ particleCount: 40, angle: 60, spread: 55, origin: { x: 0 }, colors: colors });
+        confetti({ particleCount: 40, angle: 120, spread: 55, origin: { x: 1 }, colors: colors });
+      }, 650);
     }
 
     window.resetGame = function() {
