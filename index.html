@@ -3,639 +3,655 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Phase Changes: Tug of War Host</title>
+  <title>Phase Changes: Tug of War - Host Dashboard</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Canvas Confetti -->
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;900&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
+
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-    
-    body { 
-      font-family: 'Fredoka', sans-serif; 
-      text-align: center; 
-      color: #ffffff; 
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 1rem;
-      overflow-x: hidden;
-      position: relative;
-      background: linear-gradient(-45deg, #450a0a, #0a1128, #0369a1, #2e1065);
-      background-size: 300% 300%;
-      animation: subtleBG 16s ease infinite;
+    @keyframes pulse-ring {
+      0% { transform: scale(0.95); opacity: 0.8; }
+      50% { transform: scale(1.05); opacity: 0.4; }
+      100% { transform: scale(0.95); opacity: 0.8; }
     }
-
-    @keyframes subtleBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-
-    .host-container { width: 100%; max-width: 900px; display: flex; flex-direction: column; gap: 14px; align-items: center; }
-
-    .game-title {
-      font-size: clamp(1.4rem, 3.5vw, 2.6rem);
-      font-family: 'Outfit', sans-serif;
-      letter-spacing: 2px;
-      display: flex; justify-content: center; flex-wrap: wrap; gap: 2px;
-      text-transform: uppercase;
-      text-shadow: 0 4px 20px rgba(0,0,0,0.8);
+    .animate-pulse-ring {
+      animation: pulse-ring 2s infinite ease-in-out;
     }
-    .char {
-      display: inline-block;
-      font-weight: 900;
-      background-clip: text; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      animation: subtleJump 2.5s infinite ease-in-out;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
+    @keyframes winner-jump {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-15px); }
     }
-    .char:nth-child(4n+1) { background-image: linear-gradient(135deg, #38bdf8 0%, #0284c7 100%); animation-delay: 0.0s; }
-    .char:nth-child(4n+2) { background-image: linear-gradient(135deg, #fca5a5 0%, #dc2626 100%); animation-delay: 0.15s; }
-    .char:nth-child(4n+3) { background-image: linear-gradient(135deg, #93c5fd 0%, #2563eb 100%); animation-delay: 0.3s; }
-    .char:nth-child(4n+4) { background-image: linear-gradient(135deg, #818cf8 0%, #4f46e5 100%); animation-delay: 0.45s; }
-
-    @keyframes subtleJump { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
-
-    .timer { font-family: 'Outfit', sans-serif; font-size: clamp(2rem, 4vw, 3rem); font-weight: 900; letter-spacing: 1px; font-variant-numeric: tabular-nums; text-shadow: 0 4px 20px rgba(0,0,0,0.6); }
-    .timer.sudden-death { color: #ff2a5f; animation: pulseScale 0.6s infinite alternate ease-in-out; }
-    @keyframes pulseScale { from { transform: scale(1); } to { transform: scale(1.08); } }
-
-    .dashboard { 
-      display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 100%; 
-      background: rgba(15, 23, 42, 0.7); 
-      backdrop-filter: blur(28px) saturate(160%); 
-      -webkit-backdrop-filter: blur(28px) saturate(160%); 
-      border: 1px solid rgba(255, 255, 255, 0.15); 
-      padding: 18px 22px; border-radius: 28px; 
-      box-shadow: 0 25px 50px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.18); 
+    .animate-winner-jump {
+      animation: winner-jump 0.6s infinite ease-in-out;
     }
-    .score { font-family: 'Outfit', sans-serif; font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 900; }
-    .red-txt { color: #ff5263; text-shadow: 0 2px 10px rgba(255, 82, 99, 0.3); }
-    .blue-txt { color: #38bdf8; text-shadow: 0 2px 10px rgba(56, 189, 248, 0.3); }
-
-    .roster-box {
-      margin-top: 8px;
-      background: rgba(0, 0, 0, 0.35);
-      border-radius: 14px;
-      padding: 10px 14px;
-      font-size: 0.85rem;
-      max-height: 70px;
-      overflow-y: auto;
-      line-height: 1.4;
-      text-align: center;
-      border: 1px solid rgba(255,255,255,0.08);
+    @keyframes sudden-death-pulse {
+      0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.6); border-color: rgba(239, 68, 68, 0.9); }
+      50% { box-shadow: 0 0 35px rgba(245, 158, 11, 0.9); border-color: rgba(245, 158, 11, 1); }
     }
-
-    .arena { 
-      background: rgba(15, 23, 42, 0.7); 
-      backdrop-filter: blur(28px) saturate(160%); 
-      -webkit-backdrop-filter: blur(28px) saturate(160%); 
-      padding: clamp(25px, 4vw, 45px) 10px; 
-      border-radius: 28px; width: 100%; position: relative; overflow: hidden; 
-      border: 1px solid rgba(255, 255, 255, 0.15); 
-      box-shadow: 0 25px 50px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.18); 
+    .animate-sudden-death {
+      animation: sudden-death-pulse 1s infinite ease-in-out;
     }
-    .center-line { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: rgba(255, 255, 255, 0.3); z-index: 1; }
-    .rope-wrapper { display: flex; align-items: center; justify-content: center; transition: transform 0.35s cubic-bezier(0.25, 1, 0.5, 1); position: relative; z-index: 2; }
-    .real-rope { width: clamp(160px, 30vw, 320px); height: clamp(12px, 1.4vw, 16px); background: linear-gradient(90deg, #854d0e, #f59e0b, #854d0e); margin: 0 -8px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); position: relative; }
-    .center-flag { position: absolute; top: -22px; left: 50%; transform: translateX(-50%); font-size: clamp(1.2rem, 2vw, 1.8rem); animation: flagWiggle 1.5s infinite alternate ease-in-out; }
-    @keyframes flagWiggle { from { transform: translateX(-50%) rotate(-8deg); } to { transform: translateX(-50%) rotate(8deg); } }
-
-    .team-players { display: flex; gap: clamp(2px, 0.8vw, 8px); }
-    .player-container { font-size: clamp(1.5rem, 3vw, 2.5rem); display: inline-block; transition: transform 0.3s ease; animation: idleBob 2s infinite alternate ease-in-out; }
-    @keyframes idleBob { from { transform: translateY(0); } to { transform: translateY(-4px); } }
-    .pull-left .player-container { transform: rotate(-15deg) translateX(-6px) scale(1.08); }
-    .pull-right .player-container { transform: rotate(15deg) translateX(6px) scale(1.08); }
-    .jumping { animation: victoryJump 0.5s infinite alternate cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; }
-    @keyframes victoryJump { from { transform: translateY(0) scale(1); } to { transform: translateY(-20px) scale(1.1); } }
-
-    .controls { display: flex; gap: 10px; margin-top: 6px; flex-wrap: wrap; justify-content: center; }
-    button { 
-      padding: 12px 22px; 
-      font-family: 'Fredoka', sans-serif; 
-      font-size: 0.95rem; 
-      font-weight: 700; 
-      letter-spacing: 0.5px; 
-      border-radius: 50px; 
-      cursor: pointer; 
-      transition: all 0.25s ease; 
-      backdrop-filter: blur(16px); 
-      box-shadow: 0 8px 20px rgba(0,0,0,0.3); 
-    }
-    button:hover { transform: translateY(-2px) scale(1.02); } 
-    button:active { transform: translateY(0) scale(0.96); }
-
-    .start-btn { background: rgba(34, 197, 94, 0.2); color: #ffffff; border: 1px solid rgba(34, 197, 94, 0.4); }
-    .end-btn { background: rgba(249, 115, 22, 0.2); color: #ffffff; border: 1px solid rgba(249, 115, 22, 0.4); }
-    .reset-btn { background: rgba(239, 68, 68, 0.2); color: #ffffff; border: 1px solid rgba(239, 68, 68, 0.4); }
-    .clear-roster-btn { background: rgba(168, 85, 247, 0.2); color: #e9d5ff; border: 1px solid rgba(168, 85, 247, 0.4); }
-    .winners-btn { background: linear-gradient(135deg, rgba(234, 179, 8, 0.35), rgba(202, 138, 4, 0.45)); color: #fef08a; border: 1px solid rgba(250, 204, 21, 0.5); text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
-
-    /* OVERLAY MODAL BASE */
-    .overlay-modal {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(10, 15, 30, 0.92);
-      display: flex; flex-direction: column; justify-content: center; align-items: center;
-      z-index: 999; opacity: 0; pointer-events: none;
-      transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
-      backdrop-filter: blur(0px);
-    }
-    .overlay-modal.active { opacity: 1; pointer-events: auto; backdrop-filter: blur(25px); }
-
-    /* DRAMATIC COUNTDOWN EFFECTS */
-    .countdown-ring {
-      position: absolute;
-      width: clamp(240px, 40vw, 400px);
-      height: clamp(240px, 40vw, 400px);
-      border-radius: 50%;
-      border: 4px stroke rgba(255, 255, 255, 0.1);
-      border-top: 4px solid #38bdf8;
-      border-right: 4px solid #ef4444;
-      border-bottom: 4px solid #facc15;
-      animation: spinRing 2s linear infinite;
-      box-shadow: 0 0 50px rgba(56, 189, 248, 0.3);
-    }
-    @keyframes spinRing { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-    .countdown-number { 
-      font-family: 'Outfit', sans-serif; 
-      font-size: clamp(7rem, 22vw, 15rem); 
-      font-weight: 900; 
-      color: #ffffff; 
-      text-shadow: 0 0 50px rgba(255,255,255,0.8), 0 10px 40px rgba(0,0,0,0.9); 
-      position: relative;
-      z-index: 2;
-    }
-    .countdown-anim {
-      animation: dramaticBoom 0.85s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-    }
-    @keyframes dramaticBoom { 
-      0% { transform: scale(3.5) rotate(-10deg); opacity: 0; filter: blur(20px); } 
-      35% { transform: scale(0.95) rotate(0deg); opacity: 1; filter: blur(0px); } 
-      50% { transform: scale(1.1); }
-      100% { transform: scale(1); opacity: 1; } 
-    }
-
-    /* DRAMATIC WINNER POPUP EFFECTS */
-    .modal-card {
-      background: rgba(15, 23, 42, 0.95); 
-      border: 2px solid rgba(255, 255, 255, 0.2);
-      padding: clamp(30px, 5vw, 50px); 
-      border-radius: 36px; 
-      box-shadow: 0 30px 80px rgba(0,0,0,0.8);
-      transform: scale(0.6) translateY(50px) rotate(-3deg);
-      transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      max-width: 90%;
-      width: 550px;
-      position: relative;
-      overflow: hidden;
-    }
-    .overlay-modal.active .modal-card { transform: scale(1) translateY(0) rotate(0deg); }
-
-    .winner-card-red {
-      border-color: #ff5263 !important;
-      box-shadow: 0 0 80px rgba(255, 82, 99, 0.4), inset 0 0 30px rgba(255, 82, 99, 0.2) !important;
-    }
-    .winner-card-blue {
-      border-color: #38bdf8 !important;
-      box-shadow: 0 0 80px rgba(56, 189, 248, 0.4), inset 0 0 30px rgba(56, 189, 248, 0.2) !important;
-    }
-    .winner-card-tie {
-      border-color: #a855f7 !important;
-      box-shadow: 0 0 80px rgba(168, 85, 247, 0.4), inset 0 0 30px rgba(168, 85, 247, 0.2) !important;
-    }
-
-    .trophy-badge {
-      font-size: clamp(3.5rem, 8vw, 5.5rem);
-      margin-bottom: 10px;
-      display: inline-block;
-      animation: badgeBounce 1s infinite alternate cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
-    }
-    @keyframes badgeBounce { from { transform: translateY(0) scale(1) rotate(-5deg); } to { transform: translateY(-12px) scale(1.15) rotate(5deg); } }
-
-    .winner-title {
-      font-family: 'Outfit', sans-serif;
-      font-size: clamp(2rem, 5vw, 3.5rem);
-      font-weight: 900;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      text-shadow: 0 4px 20px rgba(0,0,0,0.6);
-      margin-bottom: 6px;
-    }
-
-    .winner-names { 
-      margin-top: 20px; 
-      font-size: 1.25rem; 
-      color: #fef08a; 
-      max-width: 100%; 
-      line-height: 1.6; 
-      font-weight: 700; 
-      text-shadow: 0 2px 10px rgba(0,0,0,0.6); 
-      background: rgba(0, 0, 0, 0.4);
-      padding: 16px 20px;
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,0.1);
-    }
-
-    .rays-bg {
-      position: absolute;
-      top: -50%; left: -50%;
-      width: 200%; height: 200%;
-      background: conic-gradient(from 0deg, transparent 0deg 30deg, rgba(255,255,255,0.03) 30deg 60deg);
-      animation: rotateRays 20s linear infinite;
-      pointer-events: none;
-    }
-    @keyframes rotateRays { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
   </style>
 </head>
-<body>
+<body class="bg-slate-900 text-white min-h-screen font-sans flex flex-col">
 
-  <!-- COUNTDOWN OVERLAY -->
-  <div class="overlay-modal" id="countdownOverlay">
-    <div class="countdown-ring"></div>
-    <div class="countdown-number" id="countdownText">3</div>
-  </div>
-
-  <!-- CONFIRM END MODAL -->
-  <div class="overlay-modal" id="confirmEndOverlay">
-    <div class="modal-card">
-      <h2 style="font-size: 2rem; margin-bottom: 20px; font-family: 'Outfit';">End Match Early?</h2>
-      <div style="display: flex; gap: 15px; justify-content: center;">
-        <button class="reset-btn" onclick="forceEndMatch()">YES, END IT</button>
-        <button style="background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.25);" onclick="document.getElementById('confirmEndOverlay').classList.remove('active')">CANCEL</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MATCH OVER MODAL -->
-  <div class="overlay-modal" id="timesUpOverlay">
-    <div class="modal-card" id="winnerModalCard">
-      <div class="rays-bg"></div>
-      <div class="trophy-badge" id="modalEmoji">🏆</div>
-      <h1 id="endReason" style="font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 800; color: rgba(255,255,255,0.7); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4px;">MATCH OVER</h1>
-      <div class="winner-title" id="winnerText">TEAM RED WINS!</div>
-      <div class="winner-names" id="winnerList"></div>
-      <button onclick="document.getElementById('timesUpOverlay').classList.remove('active')" style="margin-top: 25px; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.4); width: 100%; padding: 14px 0; font-size: 1.1rem;">CONTINUE</button>
-    </div>
-  </div>
-
-  <div class="host-container">
-    <div class="game-title">
-      <span class="char">P</span><span class="char">H</span><span class="char">A</span><span class="char">S</span><span class="char">E</span><span class="char">&nbsp;</span>
-      <span class="char">C</span><span class="char">H</span><span class="char">A</span><span class="char">N</span><span class="char">G</span><span class="char">E</span><span class="char">S</span><span class="char">:</span><span class="char">&nbsp;</span>
-      <span class="char">T</span><span class="char">U</span><span class="char">G</span><span class="char">&nbsp;</span><span class="char">O</span><span class="char">F</span><span class="char">&nbsp;</span><span class="char">W</span><span class="char">A</span><span class="char">R</span>
-    </div>
-
-    <div class="timer" id="timerDisplay">03:00</div>
-
-    <div class="dashboard">
-      <div>
-        <div class="red-txt" style="font-size: 0.9rem; font-weight: 700; letter-spacing: 1px;">TEAM RED</div>
-        <div class="score red-txt" id="scoreRed">0</div>
-        <div id="playersRedCount" style="opacity: 0.8; font-size: 0.8rem; font-weight: 700;">0 Players</div>
-        <div class="roster-box red-txt" id="rosterRed">Waiting for players...</div>
-      </div>
-      <div>
-        <div class="blue-txt" style="font-size: 0.9rem; font-weight: 700; letter-spacing: 1px;">TEAM BLUE</div>
-        <div class="score blue-txt" id="scoreBlue">0</div>
-        <div id="playersBlueCount" style="opacity: 0.8; font-size: 0.8rem; font-weight: 700;">0 Players</div>
-        <div class="roster-box blue-txt" id="rosterBlue">Waiting for players...</div>
-      </div>
-    </div>
-
-    <div class="arena">
-      <div class="center-line"></div>
-      <div class="rope-wrapper" id="ropeWrapper">
-        <div class="team-players" id="teamAAvatars">
-          <div class="player-container">🏃‍♂️</div><div class="player-container">🏃‍♂️</div><div class="player-container">🏃‍♂️</div>
-        </div>
-        <div class="real-rope" id="realRope"><div class="center-flag">🚩</div></div>
-        <div class="team-players" id="teamBAvatars">
-          <div class="player-container">🏃‍♂️‍➡️</div><div class="player-container">🏃‍♂️‍➡️</div><div class="player-container">🏃‍♂️‍➡️</div>
+  <!-- Header / Control Bar -->
+  <header class="bg-slate-800 border-b border-slate-700 p-4 sticky top-0 z-40 shadow-lg">
+    <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <span class="text-3xl">🧪</span>
+        <div>
+          <h1 class="text-xl font-bold text-amber-400 leading-none">Phase Changes: Tug of War</h1>
+          <p class="text-xs text-slate-400 mt-1">Host Dashboard & Central Game Engine</p>
         </div>
       </div>
+
+      <!-- Controls -->
+      <div class="flex items-center gap-3">
+        <button id="btnStart" class="bg-emerald-600 hover:bg-emerald-500 font-bold px-4 py-2 rounded-lg transition-all shadow-md active:scale-95 flex items-center gap-1.5">
+          <span>▶</span> Start Match
+        </button>
+        <button id="btnEnd" class="bg-amber-600 hover:bg-amber-500 font-bold px-4 py-2 rounded-lg transition-all shadow-md active:scale-95 flex items-center gap-1.5">
+          <span>🛑</span> End Match
+        </button>
+        <button id="btnReset" class="bg-slate-700 hover:bg-slate-600 font-bold px-4 py-2 rounded-lg transition-all shadow-md active:scale-95 flex items-center gap-1.5">
+          <span>🔄</span> Reset Rope
+        </button>
+        <button id="btnClearRoster" class="bg-rose-900/60 hover:bg-rose-800 text-rose-200 text-sm font-semibold px-3 py-2 rounded-lg transition-all border border-rose-700/50">
+          🧹 Clear Players
+        </button>
+        <button id="btnShowWinners" class="bg-indigo-600 hover:bg-indigo-500 text-sm font-bold px-3 py-2 rounded-lg transition-all">
+          🏆 Winners
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Game Layout -->
+  <main class="max-w-7xl mx-auto w-full p-4 flex-1 flex flex-col gap-6">
+
+    <!-- Top Status Cards: Red Score / Timer / Blue Score -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      
+      <!-- Red Team Header -->
+      <div class="bg-red-950/40 border border-red-800/50 rounded-2xl p-4 flex items-center justify-between shadow-inner">
+        <div>
+          <h2 class="text-red-400 font-black text-xl tracking-wide uppercase">Red Team</h2>
+          <p class="text-slate-400 text-xs mt-1">Active Players: <span id="redCount" class="font-bold text-white">0</span></p>
+        </div>
+        <div class="text-right">
+          <span class="text-xs text-red-400/80 font-bold uppercase tracking-wider block">Score</span>
+          <span id="redScore" class="text-4xl font-black text-red-400">0</span>
+        </div>
+      </div>
+
+      <!-- Match Timer Card (With Sudden Death Dynamic Support) -->
+      <div id="timerCard" class="bg-slate-800/80 border border-slate-700 rounded-2xl p-4 flex flex-col items-center justify-center text-center shadow-md transition-all duration-300">
+        <span class="text-xs uppercase tracking-widest text-slate-400 font-semibold mb-1">Match Time Remaining</span>
+        <div id="timerDisplay" class="text-4xl font-mono font-black text-amber-400 tracking-wider">03:00</div>
+        
+        <div id="gameStatusBadge" class="mt-2 text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-700 text-slate-300">
+          WAITING TO START
+        </div>
+
+        <!-- Sudden Death Banner (Hidden by default) -->
+        <div id="suddenDeathBanner" class="hidden mt-2 text-[11px] font-black tracking-widest uppercase text-rose-400 bg-rose-950/80 border border-rose-600/80 px-3 py-1 rounded-full animate-bounce">
+          ⚡ SUDDEN DEATH MODE (LAST 30s) ⚡
+        </div>
+      </div>
+
+      <!-- Blue Team Header -->
+      <div class="bg-blue-950/40 border border-blue-800/50 rounded-2xl p-4 flex items-center justify-between shadow-inner">
+        <div class="text-left">
+          <span class="text-xs text-blue-400/80 font-bold uppercase tracking-wider block">Score</span>
+          <span id="blueScore" class="text-4xl font-black text-blue-400">0</span>
+        </div>
+        <div class="text-right">
+          <h2 class="text-blue-400 font-black text-xl tracking-wide uppercase">Blue Team</h2>
+          <p class="text-slate-400 text-xs mt-1">Active Players: <span id="blueCount" class="font-bold text-white">0</span></p>
+        </div>
+      </div>
     </div>
 
-    <div class="controls">
-      <button class="start-btn" onclick="triggerStartSequence()">▶ START</button>
-      <button class="end-btn" onclick="document.getElementById('confirmEndOverlay').classList.add('active')">🛑 END</button>
-      <button class="reset-btn" onclick="resetGame()">🔄 RESET MATCH</button>
-      <button class="clear-roster-btn" onclick="clearRoster()">🧹 CLEAR ROSTER</button>
-      <button class="winners-btn" onclick="proudlyPresentWinners()">🏆 SHOW WINNERS</button>
+    <!-- Interactive Rope Arena -->
+    <div class="bg-slate-800/50 border border-slate-700/80 rounded-2xl p-6 relative overflow-hidden min-h-[300px] flex flex-col justify-between shadow-2xl">
+      
+      <!-- Top Arena Markers -->
+      <div class="flex justify-between items-center text-xs font-bold uppercase tracking-wider px-4">
+        <span class="text-red-400">◄ Red Zone (-100)</span>
+        <span class="text-slate-500">Center Flag (0)</span>
+        <span class="text-blue-400">Blue Zone (+100) ►</span>
+      </div>
+
+      <!-- Arena Field & Rope Track -->
+      <div class="relative my-auto py-12">
+        <!-- Center Threshold Line -->
+        <div class="absolute left-1/2 top-0 bottom-0 w-1 bg-amber-400/30 -translate-x-1/2 border-dashed border-l-2 border-amber-400/50 z-0"></div>
+
+        <!-- Win Boundaries -->
+        <div class="absolute left-6 top-0 bottom-0 w-1 bg-red-500/40 z-0"></div>
+        <div class="absolute right-6 top-0 bottom-0 w-1 bg-blue-500/40 z-0"></div>
+
+        <!-- The Physical Rope -->
+        <div class="relative w-full h-6 bg-amber-800/60 rounded-full border border-amber-900/80 shadow-inner z-10">
+          <!-- Ribbon Flag attached at center point relative to rope movement -->
+          <div id="ropeTrack" class="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 transition-all duration-300 ease-out flex items-center justify-center">
+            <div class="w-8 h-12 bg-amber-500 border-2 border-white rounded shadow-xl flex items-center justify-center font-bold text-xs text-slate-900">
+              🚩
+            </div>
+          </div>
+        </div>
+
+        <!-- Visual Team Avatars -->
+        <div class="flex justify-between items-center mt-6 px-4">
+          <div id="redTeamAvatars" class="flex gap-1 text-2xl">🔴🔴🔴</div>
+          <div id="blueTeamAvatars" class="flex gap-1 text-2xl">🔵🔵🔵</div>
+        </div>
+      </div>
+
+      <!-- Live Tug Force Gauge -->
+      <div class="bg-slate-900/60 rounded-lg p-3 border border-slate-700/50 flex items-center justify-between text-xs">
+        <span class="text-red-400 font-bold">Red Pull Force: <span id="redForce">0.0</span></span>
+        <span class="text-slate-400">Rope Delta: <span id="ropePosDisplay" class="font-mono text-white font-bold">0</span></span>
+        <span class="text-blue-400 font-bold">Blue Pull Force: <span id="blueForce">0.0</span></span>
+      </div>
+    </div>
+
+    <!-- Active Players Roster Table -->
+    <div class="bg-slate-800/60 border border-slate-700 rounded-2xl p-4">
+      <div class="flex justify-between items-center mb-3">
+        <h3 class="text-sm font-bold text-slate-300 uppercase tracking-wider">Connected Players Roster</h3>
+        <span class="text-xs text-slate-400">Balancing: <span class="text-emerald-400 font-semibold">Auto-Balanced</span></span>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs text-slate-300">
+          <thead class="bg-slate-900/80 text-slate-400 uppercase text-[10px] tracking-wider">
+            <tr>
+              <th class="p-2.5">Player Name</th>
+              <th class="p-2.5">Team</th>
+              <th class="p-2.5 text-center">Correct Answers</th>
+              <th class="p-2.5 text-center">Wrong Answers</th>
+              <th class="p-2.5 text-center">Current Penalty</th>
+            </tr>
+          </thead>
+          <tbody id="rosterTableBody" class="divide-y divide-slate-700/50">
+            <tr>
+              <td colspan="5" class="p-4 text-center text-slate-500 italic">No players connected yet.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- FULLSCREEN COUNTDOWN OVERLAY -->
+  <div id="countdownModal" class="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-md hidden flex-col items-center justify-center">
+    <div class="relative flex flex-col items-center justify-center">
+      <div class="w-48 h-48 rounded-full border-4 border-amber-400/20 border-t-amber-400 animate-spin absolute"></div>
+      <div class="w-40 h-40 rounded-full border-4 border-amber-400/40 animate-pulse-ring absolute"></div>
+      <span id="countdownNumber" class="text-8xl font-black text-amber-400 drop-shadow-2xl z-10">3</span>
+      <span class="mt-8 text-slate-300 font-bold tracking-widest uppercase text-sm z-10">Get Ready to Tug!</span>
     </div>
   </div>
 
+  <!-- VICTORY REVEAL MODAL -->
+  <div id="victoryModal" class="fixed inset-0 z-50 bg-slate-950/95 backdrop-blur-md hidden flex-col items-center justify-center p-4">
+    <div class="bg-slate-900 border-2 border-amber-500/50 rounded-3xl p-8 max-w-lg w-full text-center shadow-2xl relative overflow-hidden">
+      <div class="text-6xl mb-2">🏆</div>
+      <h2 class="text-3xl font-black text-amber-400 uppercase tracking-wide">Match Complete!</h2>
+      <p id="victorySubtitle" class="text-slate-400 text-sm mt-1">The final winner has been determined</p>
+
+      <div class="my-6 p-6 rounded-2xl bg-slate-800/80 border border-slate-700">
+        <span class="text-xs uppercase font-bold tracking-widest text-slate-400 block mb-1">Winning Team</span>
+        <div id="winnerTeamName" class="text-4xl font-black uppercase text-emerald-400">RED TEAM</div>
+        <div class="mt-4 flex justify-around border-t border-slate-700/80 pt-4 text-sm">
+          <div>
+            <span class="text-slate-400 text-xs block">Final Red Score</span>
+            <span id="finalRedScore" class="font-bold text-red-400 text-lg">0</span>
+          </div>
+          <div>
+            <span class="text-slate-400 text-xs block">Final Rope Pos</span>
+            <span id="finalRopePos" class="font-bold text-amber-400 text-lg">0</span>
+          </div>
+          <div>
+            <span class="text-slate-400 text-xs block">Final Blue Score</span>
+            <span id="finalBlueScore" class="font-bold text-blue-400 text-lg">0</span>
+          </div>
+        </div>
+      </div>
+
+      <button id="btnCloseVictory" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-xl transition-all shadow-lg">
+        Close & Continue
+      </button>
+    </div>
+  </div>
+
+  <!-- FIREBASE REALTIME DATABASE SDK (v10.8.0) -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, onValue, onChildAdded, set, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+    import { getDatabase, ref, onValue, set, update, remove, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-rtdb.js";
 
-    const app = initializeApp({
-      apiKey: "AIzaSyCS3yT10PtrUfFqvO4MhsZucgEatbSFKZY", 
-      authDomain: "tug-of-war-game-f18b3.firebaseapp.com",
-      databaseURL: "https://tug-of-war-game-f18b3-default-rtdb.firebaseio.com", 
-      projectId: "tug-of-war-game-f18b3"
-    });
+    // Firebase Config
+    const firebaseConfig = {
+      databaseURL: "https://tug-of-war-game-f18b3-default-rtdb.firebaseio.com"
+    };
+
+    const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const gameRef = ref(db, "game/state");
-    const presenceRef = ref(db, "game/presence");
-    const pullsRef = ref(db, "game/pulls");
 
-    let timerInterval = null, confettiInterval = null, currentPlayers = {}, currentWinner = "TIE";
-    let scoreRed = 0, scoreBlue = 0, ropePosition = 0, currentStatus = "waiting";
+    // References
+    const refState = ref(db, "game/state");
+    const refPresence = ref(db, "game/presence");
+    const refPulls = ref(db, "game/pulls");
 
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    
-    function playSound(freq, type, duration, vol = 1.0) {
+    // Local State Tracking
+    let gameState = {
+      ropePosition: 0,
+      redScore: 0,
+      blueScore: 0,
+      status: "WAITING", // WAITING, PLAYING, ENDED
+      timer: 180,
+      isSuddenDeath: false
+    };
+
+    let activePlayers = {};
+    let timerInterval = null;
+    let audioCtx = null;
+
+    // Helper Sound Synthesizer (Web Audio API)
+    function playBeep(freq = 440, type = 'sine', duration = 0.15) {
       try {
+        if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator(), gain = audioCtx.createGain();
-        osc.type = type; osc.frequency.value = freq; 
-        gain.gain.setValueAtTime(vol, audioCtx.currentTime);
-        osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + duration);
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
         osc.stop(audioCtx.currentTime + duration);
-      } catch (e) {}
-    }
-
-    function playDramaticCountdownBeep(isGo = false) {
-      if (isGo) {
-        playSound(523.25, "square", 0.15, 0.8);
-        setTimeout(() => playSound(659.25, "square", 0.15, 0.8), 80);
-        setTimeout(() => playSound(783.99, "triangle", 0.4, 1.0), 160);
-      } else {
-        playSound(180, "sawtooth", 0.25, 0.9);
-        playSound(360, "sine", 0.25, 0.6);
+      } catch (e) {
+        console.error("Audio error:", e);
       }
     }
 
-    const errCatch = () => {};
+    // Initialize Game DB Structure
+    function initDatabaseState() {
+      set(refState, {
+        ropePosition: 0,
+        redScore: 0,
+        blueScore: 0,
+        status: "WAITING",
+        timer: 180,
+        isSuddenDeath: false,
+        lastUpdated: serverTimestamp()
+      });
+    }
 
-    // Monitor Connected Roster
-    onValue(presenceRef, (snapshot) => {
-      currentPlayers = snapshot.val() || {};
-      let redNames = [], blueNames = [];
-      Object.values(currentPlayers).forEach(p => { 
-        if (p.name) {
-          if (p.team === "A") redNames.push(p.name); 
-          else blueNames.push(p.name);
+    // 1. Listen for Presence / Balance Teams Evenly
+    onValue(refPresence, (snapshot) => {
+      activePlayers = snapshot.val() || {};
+      renderRoster();
+      
+      let redCount = 0;
+      let blueCount = 0;
+
+      Object.entries(activePlayers).forEach(([id, player]) => {
+        if (player.team === 'red') redCount++;
+        if (player.team === 'blue') blueCount++;
+      });
+
+      Object.entries(activePlayers).forEach(([id, player]) => {
+        if (!player.team) {
+          let assignedTeam = 'red';
+          if (blueCount < redCount) {
+            assignedTeam = 'blue';
+            blueCount++;
+          } else if (redCount < blueCount) {
+            assignedTeam = 'red';
+            redCount++;
+          } else {
+            assignedTeam = Math.random() < 0.5 ? 'red' : 'blue';
+            if (assignedTeam === 'red') redCount++; else blueCount++;
+          }
+          update(ref(db, `game/presence/${id}`), { team: assignedTeam, wrongCount: 0 });
         }
       });
 
-      document.getElementById("playersRedCount").innerText = `${redNames.length} Players`;
-      document.getElementById("playersBlueCount").innerText = `${blueNames.length} Players`;
+      document.getElementById('redCount').innerText = redCount;
+      document.getElementById('blueCount').innerText = blueCount;
+    });
 
-      document.getElementById("rosterRed").innerText = redNames.length > 0 ? redNames.join(", ") : "No players joined";
-      document.getElementById("rosterBlue").innerText = blueNames.length > 0 ? blueNames.join(", ") : "No players joined";
-    }, errCatch);
+    // 2. Listen for State Updates
+    onValue(refState, (snapshot) => {
+      const data = snapshot.val();
+      if (!data) {
+        initDatabaseState();
+        return;
+      }
+      gameState = data;
+      updateUI();
+    });
 
-    // Sync Game State
-    onValue(gameRef, (snapshot) => {
-      const data = snapshot.val() || {};
-      currentStatus = data.status || "waiting";
-      ropePosition = data.ropePosition !== undefined ? data.ropePosition : 0;
-      scoreRed = data.scoreRed || 0;
-      scoreBlue = data.scoreBlue || 0;
+    // 3. Process Live Pulls with Graduated Cooldown Penalty & Slow Movement Scaling
+    onValue(refPulls, (snapshot) => {
+      const pulls = snapshot.val();
+      if (!pulls || gameState.status !== 'PLAYING') return;
 
-      document.getElementById("ropeWrapper").style.transform = `translateX(${(ropePosition / 100) * 35}%)`;
-      document.getElementById("scoreRed").innerText = scoreRed;
-      document.getElementById("scoreBlue").innerText = scoreBlue;
-    }, errCatch);
+      let deltaRope = 0;
+      let redPullForce = 0;
+      let bluePullForce = 0;
 
-    // Process incoming pulls with per-capita normalization
-    onChildAdded(pullsRef, (snapshot) => {
-      const pull = snapshot.val();
-      if (!pull || currentStatus !== "playing") {
-        remove(snapshot.ref).catch(errCatch);
+      const redTeamSize = Math.max(1, Object.values(activePlayers).filter(p => p.team === 'red').length);
+      const blueTeamSize = Math.max(1, Object.values(activePlayers).filter(p => p.team === 'blue').length);
+
+      Object.entries(pulls).forEach(([pullId, pull]) => {
+        const player = activePlayers[pull.playerId];
+        const now = Date.now();
+
+        if (player && player.cooldownUntil && now < player.cooldownUntil) {
+          return;
+        }
+
+        if (pull.isCorrect) {
+          const pullWeight = 0.45; 
+
+          if (pull.team === 'red') {
+            redPullForce += pullWeight / redTeamSize;
+          } else if (pull.team === 'blue') {
+            bluePullForce += pullWeight / blueTeamSize;
+          }
+        } else {
+          // 1st wrong = 5s penalty, subsequent wrong = 10s penalty
+          const wrongCount = (player?.wrongCount || 0) + 1;
+          const penaltySeconds = wrongCount === 1 ? 5 : 10;
+          const cooldownUntil = now + (penaltySeconds * 1000);
+
+          if (pull.playerId) {
+            update(ref(db, `game/presence/${pull.playerId}`), {
+              wrongCount: wrongCount,
+              cooldownUntil: cooldownUntil
+            });
+          }
+        }
+      });
+
+      remove(refPulls);
+
+      deltaRope = (bluePullForce - redPullForce);
+      
+      if (deltaRope !== 0) {
+        let newRopePos = Math.min(100, Math.max(-100, gameState.ropePosition + deltaRope));
+        
+        let newRedScore = gameState.redScore + (deltaRope < 0 ? Math.abs(Math.round(deltaRope * 10)) : 0);
+        let newBlueScore = gameState.blueScore + (deltaRope > 0 ? Math.abs(Math.round(deltaRope * 10)) : 0);
+
+        document.getElementById('redForce').innerText = redPullForce.toFixed(1);
+        document.getElementById('blueForce').innerText = bluePullForce.toFixed(1);
+
+        let newStatus = gameState.status;
+        if (newRopePos <= -100 || newRopePos >= 100) {
+          newStatus = 'ENDED';
+          clearInterval(timerInterval);
+          triggerVictory(newRopePos <= -100 ? 'red' : 'blue', "ROPE PULLED TO ZONE!");
+        }
+
+        update(refState, {
+          ropePosition: newRopePos,
+          redScore: newRedScore,
+          blueScore: newBlueScore,
+          status: newStatus,
+          lastUpdated: serverTimestamp()
+        });
+      }
+    });
+
+    // Render Player Roster
+    function renderRoster() {
+      const tbody = document.getElementById('rosterTableBody');
+      const players = Object.values(activePlayers);
+
+      if (players.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500 italic">No players connected yet.</td></tr>`;
         return;
       }
 
-      let redSize = 0, blueSize = 0;
-      Object.values(currentPlayers).forEach(p => {
-        if (p.team === "A") redSize++;
-        else if (p.team === "B") blueSize++;
-      });
+      const now = Date.now();
+      tbody.innerHTML = players.map(p => {
+        const isPenalized = p.cooldownUntil && now < p.cooldownUntil;
+        const remainingPenalty = isPenalized ? Math.ceil((p.cooldownUntil - now) / 1000) : 0;
 
-      redSize = Math.max(redSize, 1);
-      blueSize = Math.max(blueSize, 1);
-
-      const dir = pull.team === "A" ? -1 : 1;
-      const teamSize = pull.team === "A" ? redSize : blueSize;
-
-      const normalizedForce = (pull.force / teamSize) * dir;
-      ropePosition = Math.max(-100, Math.min(100, ropePosition + normalizedForce));
-
-      if (pull.team === "A") scoreRed += pull.points;
-      if (pull.team === "B") scoreBlue += pull.points;
-
-      triggerPullFX(pull.team);
-
-      update(gameRef, {
-        ropePosition: ropePosition,
-        scoreRed: scoreRed,
-        scoreBlue: scoreBlue
-      }).catch(errCatch);
-
-      remove(snapshot.ref).catch(errCatch);
-    }, errCatch);
-
-    function triggerPullFX(team) {
-      const t = document.getElementById(team === "A" ? "teamAAvatars" : "teamBAvatars");
-      t.classList.add(team === "A" ? "pull-left" : "pull-right");
-      playSound(120, "sawtooth", 0.12, 0.5);
-      setTimeout(() => { t.classList.remove("pull-left", "pull-right"); }, 300);
+        return `
+          <tr class="hover:bg-slate-800/40 transition-colors">
+            <td class="p-2.5 font-bold text-white">${p.name || 'Anonymous'}</td>
+            <td class="p-2.5">
+              <span class="px-2 py-0.5 rounded text-[10px] font-black uppercase ${p.team === 'red' ? 'bg-red-900/60 text-red-300 border border-red-700' : 'bg-blue-900/60 text-blue-300 border border-blue-700'}">
+                ${p.team || 'Unassigned'}
+              </span>
+            </td>
+            <td class="p-2.5 text-center font-mono text-emerald-400 font-bold">${p.score || 0}</td>
+            <td class="p-2.5 text-center font-mono text-rose-400 font-bold">${p.wrongCount || 0}</td>
+            <td class="p-2.5 text-center">
+              ${isPenalized 
+                ? `<span class="bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded font-mono font-bold border border-amber-500/40 animate-pulse">⏳ ${remainingPenalty}s</span>` 
+                : `<span class="text-slate-500">Ready</span>`}
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
-    // ENHANCED DRAMATIC COUNTDOWN
-    window.triggerStartSequence = async function() {
-      const overlay = document.getElementById("countdownOverlay");
-      const text = document.getElementById("countdownText");
-      overlay.classList.add("active");
+    // Update Dashboard Elements from State
+    function updateUI() {
+      document.getElementById('redScore').innerText = gameState.redScore || 0;
+      document.getElementById('blueScore').innerText = gameState.blueScore || 0;
+      document.getElementById('ropePosDisplay').innerText = (gameState.ropePosition || 0).toFixed(1);
+
+      // Timer UI & Sudden Death Display Logic
+      const timerVal = gameState.timer || 0;
+      const minutes = Math.floor(timerVal / 60);
+      const seconds = timerVal % 60;
+      const timerDisplayEl = document.getElementById('timerDisplay');
+      const timerCardEl = document.getElementById('timerCard');
+      const suddenDeathBanner = document.getElementById('suddenDeathBanner');
+
+      timerDisplayEl.innerText = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+      // Check Sudden Death Threshold (30s or less during active game)
+      const isSuddenDeathActive = gameState.status === 'PLAYING' && (timerVal <= 30 || gameState.isSuddenDeath);
+
+      if (isSuddenDeathActive) {
+        timerCardEl.classList.add('animate-sudden-death', 'bg-rose-950/50');
+        timerDisplayEl.className = "text-4xl font-mono font-black text-rose-500 tracking-wider animate-pulse";
+        suddenDeathBanner.classList.remove('hidden');
+      } else {
+        timerCardEl.classList.remove('animate-sudden-death', 'bg-rose-950/50');
+        timerDisplayEl.className = "text-4xl font-mono font-black text-amber-400 tracking-wider";
+        suddenDeathBanner.classList.add('hidden');
+      }
+
+      // Status Badge
+      const badge = document.getElementById('gameStatusBadge');
+      badge.innerText = gameState.status;
+      if (gameState.status === 'PLAYING') {
+        badge.className = isSuddenDeathActive
+          ? "mt-2 text-xs font-black px-2.5 py-0.5 rounded-full bg-rose-600 text-white animate-pulse"
+          : "mt-2 text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 animate-pulse";
+      } else if (gameState.status === 'ENDED') {
+        badge.className = "mt-2 text-xs font-bold px-2.5 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40";
+      } else {
+        badge.className = "mt-2 text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-700 text-slate-300";
+      }
+
+      // Update Physical Rope Visual Position
+      const ropePercent = ((gameState.ropePosition + 100) / 200) * 100;
+      document.getElementById('ropeTrack').style.left = `${ropePercent}%`;
+    }
+
+    // Start Match & Countdown Sequence
+    function startMatch() {
+      const countdownModal = document.getElementById('countdownModal');
+      const countdownNumber = document.getElementById('countdownNumber');
+      
+      countdownModal.classList.remove('hidden');
+      countdownModal.classList.add('flex');
 
       let count = 3;
-      ropePosition = 0; scoreRed = 0; scoreBlue = 0;
-      document.getElementById("ropeWrapper").style.transform = "translateX(0%)";
+      countdownNumber.innerText = count;
+      playBeep(523, 'sine', 0.2);
 
-      await remove(pullsRef).catch(errCatch);
-      await set(gameRef, { status: "countdown", countdownVal: count, ropePosition: 0, scoreRed: 0, scoreBlue: 0, timerSecs: 180 }).catch(errCatch);
-
-      const renderCount = (val) => {
-        text.classList.remove("countdown-anim");
-        void text.offsetWidth; // Force CSS Reflow
-        text.innerText = val;
-        text.classList.add("countdown-anim");
-      };
-
-      renderCount(count); 
-      playDramaticCountdownBeep(false);
-
-      const countInterval = setInterval(async () => {
+      const countInterval = setInterval(() => {
         count--;
         if (count > 0) {
-          renderCount(count); 
-          playDramaticCountdownBeep(false);
-          set(ref(db, "game/state/countdownVal"), count).catch(errCatch);
+          countdownNumber.innerText = count;
+          playBeep(523, 'sine', 0.2);
         } else if (count === 0) {
-          renderCount("GO!"); 
-          playDramaticCountdownBeep(true);
-          set(ref(db, "game/state/countdownVal"), "GO").catch(errCatch);
+          countdownNumber.innerText = "GO!";
+          playBeep(880, 'triangle', 0.4);
         } else {
           clearInterval(countInterval);
-          overlay.classList.remove("active");
-          startGame();
-        }
-      }, 1000);
-    };
+          countdownModal.classList.add('hidden');
+          countdownModal.classList.remove('flex');
 
-    function startGame() {
-      let timeLeft = 180;
-      clearInterval(timerInterval); clearInterval(confettiInterval);
-      
-      ropePosition = 0; scoreRed = 0; scoreBlue = 0;
-      document.getElementById("ropeWrapper").style.transform = "translateX(0%)";
-      set(gameRef, { status: "playing", ropePosition: 0, scoreRed: 0, scoreBlue: 0, timerSecs: 180 }).catch(errCatch);
+          update(refState, {
+            status: "PLAYING",
+            ropePosition: 0,
+            redScore: 0,
+            blueScore: 0,
+            timer: 180,
+            isSuddenDeath: false,
+            lastUpdated: serverTimestamp()
+          });
 
-      timerInterval = setInterval(() => {
-        timeLeft--;
-        updateTimerDisplay(timeLeft);
-        
-        set(ref(db, "game/state/timerSecs"), timeLeft).catch(errCatch);
-
-        if (timeLeft <= 0) {
-          processEndGame("TIME'S UP!", ropePosition < 0 ? "A" : (ropePosition > 0 ? "B" : "TIE"));
-        } else if (ropePosition <= -100) {
-          processEndGame("FLAG CAPTURED!", "A");
-        } else if (ropePosition >= 100) {
-          processEndGame("FLAG CAPTURED!", "B");
+          startTimer();
         }
       }, 1000);
     }
 
-    function updateTimerDisplay(timeLeft) {
-      const timerDisp = document.getElementById("timerDisplay");
-      if (timeLeft <= 30 && timeLeft > 0) {
-        timerDisp.className = "timer sudden-death";
-        timerDisp.innerText = `00:${timeLeft.toString().padStart(2, '0')}`;
-      } else {
-        timerDisp.className = "timer";
-        timerDisp.innerText = `${Math.floor(timeLeft / 60).toString().padStart(2, '0')}:${(timeLeft % 60).toString().padStart(2, '0')}`;
-      }
-    }
-
-    window.forceEndMatch = function() {
-      document.getElementById('confirmEndOverlay').classList.remove('active');
-      processEndGame("MATCH ENDED", ropePosition < 0 ? "A" : (ropePosition > 0 ? "B" : "TIE"));
-    };
-
-    function processEndGame(reasonText, winnerStr) {
+    // Timer Loop
+    function startTimer() {
       clearInterval(timerInterval);
-      currentWinner = winnerStr;
-      
-      set(gameRef, { status: "ended", winner: winnerStr, ropePosition: ropePosition, scoreRed: scoreRed, scoreBlue: scoreBlue }).catch(errCatch);
-      
-      document.getElementById("endReason").innerText = reasonText;
-      window.proudlyPresentWinners();
+      timerInterval = setInterval(() => {
+        if (gameState.status !== 'PLAYING') {
+          clearInterval(timerInterval);
+          return;
+        }
+
+        let currentTimer = gameState.timer - 1;
+
+        // Trigger Sudden Death at 30 seconds
+        let suddenDeathFlag = currentTimer <= 30;
+        if (currentTimer === 30 && !gameState.isSuddenDeath) {
+          playBeep(750, 'sawtooth', 0.3); // Alert sound on sudden death start
+        }
+
+        if (currentTimer <= 0) {
+          currentTimer = 0;
+          clearInterval(timerInterval);
+
+          // TIMEOUT WINNER RESOLUTION BY SCORE / ROPE POSITION
+          let winner = 'draw';
+          if (gameState.ropePosition < 0 || gameState.redScore > gameState.blueScore) {
+            winner = 'red';
+          } else if (gameState.ropePosition > 0 || gameState.blueScore > gameState.redScore) {
+            winner = 'blue';
+          }
+
+          update(refState, {
+            timer: 0,
+            isSuddenDeath: true,
+            status: "ENDED",
+            lastUpdated: serverTimestamp()
+          });
+
+          triggerVictory(winner, "TIME EXPIRED!");
+        } else {
+          update(refState, { 
+            timer: currentTimer,
+            isSuddenDeath: suddenDeathFlag 
+          });
+        }
+      }, 1000);
     }
 
-    // ENHANCED DRAMATIC WINNER POPUP & MANUAL "SHOW WINNERS"
-    window.proudlyPresentWinners = function() {
-      // Calculate current leader dynamically if clicked manually mid-game/reset
-      if (currentWinner === "TIE" || currentStatus !== "ended") {
-        if (ropePosition < 0) currentWinner = "A";
-        else if (ropePosition > 0) currentWinner = "B";
-        else currentWinner = "TIE";
-      }
+    // Trigger Victory Overlay & Confetti
+    function triggerVictory(teamWinner, reason = "") {
+      const victoryModal = document.getElementById('victoryModal');
+      const winnerTeamName = document.getElementById('winnerTeamName');
+      const victorySubtitle = document.getElementById('victorySubtitle');
 
-      const winnerText = document.getElementById("winnerText");
-      const winnerList = document.getElementById("winnerList");
-      const modalCard = document.getElementById("winnerModalCard");
-      const modalEmoji = document.getElementById("modalEmoji");
-      
-      const teamA = document.getElementById("teamAAvatars");
-      const teamB = document.getElementById("teamBAvatars");
+      document.getElementById('finalRedScore').innerText = gameState.redScore;
+      document.getElementById('finalBlueScore').innerText = gameState.blueScore;
+      document.getElementById('finalRopePos').innerText = gameState.ropePosition.toFixed(1);
 
-      teamA.classList.remove("jumping");
-      teamB.classList.remove("jumping");
-      modalCard.classList.remove("winner-card-red", "winner-card-blue", "winner-card-tie");
-      
-      let wNames = [];
-      Object.values(currentPlayers).forEach(p => { if (p.team === currentWinner && p.name) wNames.push(p.name); });
-      let namesStr = wNames.length > 0 ? `🌟 Champions: ${wNames.join(" • ")}` : "No registered players on winning team.";
-
-      if (currentWinner === "A") {
-        teamA.classList.add("jumping"); 
-        modalCard.classList.add("winner-card-red");
-        modalEmoji.innerText = "🏆";
-        winnerText.innerText = "TEAM RED WINS!"; 
-        winnerText.style.color = "#ff5263"; 
-        winnerList.innerText = namesStr; 
-        triggerVictoryFanfare("A");
-      } else if (currentWinner === "B") {
-        teamB.classList.add("jumping"); 
-        modalCard.classList.add("winner-card-blue");
-        modalEmoji.innerText = "🏆";
-        winnerText.innerText = "TEAM BLUE WINS!"; 
-        winnerText.style.color = "#38bdf8"; 
-        winnerList.innerText = namesStr; 
-        triggerVictoryFanfare("B");
+      if (teamWinner === 'red') {
+        winnerTeamName.innerText = "🔴 RED TEAM WINS!";
+        winnerTeamName.className = "text-4xl font-black uppercase text-red-500 drop-shadow-lg";
+      } else if (teamWinner === 'blue') {
+        winnerTeamName.innerText = "🔵 BLUE TEAM WINS!";
+        winnerTeamName.className = "text-4xl font-black uppercase text-blue-500 drop-shadow-lg";
       } else {
-        modalCard.classList.add("winner-card-tie");
-        modalEmoji.innerText = "🤝";
-        winnerText.innerText = "IT'S A TIE!"; 
-        winnerText.style.color = "#e9d5ff"; 
-        winnerList.innerText = "An unbelievable standoff! Both teams matched each other force for force!";
-        triggerVictoryFanfare("TIE");
-      }
-      
-      document.getElementById("timesUpOverlay").classList.add("active");
-    };
-
-    function triggerVictoryFanfare(winner) {
-      clearInterval(confettiInterval); 
-
-      if (winner === "TIE") {
-        playSound(300, "sine", 0.4, 0.8);
-        setTimeout(() => playSound(400, "sine", 0.5, 0.8), 200);
-        return;
+        winnerTeamName.innerText = "🤝 IT'S A DRAW!";
+        winnerTeamName.className = "text-4xl font-black uppercase text-amber-400 drop-shadow-lg";
       }
 
-      // Multi-note dramatic fanfare
-      playSound(523.25, "triangle", 0.25, 0.9);
-      setTimeout(() => playSound(659.25, "triangle", 0.25, 0.9), 120);
-      setTimeout(() => playSound(783.99, "triangle", 0.25, 0.9), 240);
-      setTimeout(() => playSound(1046.50, "triangle", 0.7, 1.0), 360);
-      
-      const colors = winner === "A" ? ['#ff5263', '#ffffff', '#dc2626'] : ['#38bdf8', '#ffffff', '#2563eb'];
+      victorySubtitle.innerText = reason || "The tug-of-war has concluded!";
+      victoryModal.classList.remove('hidden');
+      victoryModal.classList.add('flex');
 
-      confetti({ particleCount: 120, spread: 100, origin: { y: 0.5 }, colors: colors });
-      
-      confettiInterval = setInterval(() => { 
-        confetti({ particleCount: 40, angle: 60, spread: 55, origin: { x: 0 }, colors: colors });
-        confetti({ particleCount: 40, angle: 120, spread: 55, origin: { x: 1 }, colors: colors });
-      }, 650);
+      playBeep(587, 'square', 0.2);
+      setTimeout(() => playBeep(659, 'square', 0.2), 200);
+      setTimeout(() => playBeep(880, 'square', 0.5), 400);
+
+      confetti({
+        particleCount: 120,
+        spread: 80,
+        origin: { y: 0.6 }
+      });
     }
 
-    window.resetGame = function() {
-      clearInterval(timerInterval); clearInterval(confettiInterval);
-      currentWinner = "TIE";
-      ropePosition = 0; scoreRed = 0; scoreBlue = 0;
-      
-      remove(pullsRef).catch(errCatch);
-      
-      document.getElementById("ropeWrapper").style.transform = "translateX(0%)";
-      document.getElementById("timesUpOverlay").classList.remove("active");
-      document.getElementById("confirmEndOverlay").classList.remove("active");
-      document.getElementById("countdownOverlay").classList.remove("active");
-      document.getElementById("timerDisplay").className = "timer"; document.getElementById("timerDisplay").innerText = "03:00";
-      document.getElementById("teamAAvatars").classList.remove("jumping"); document.getElementById("teamBAvatars").classList.remove("jumping");
-      
-      set(gameRef, { status: "waiting", ropePosition: 0, scoreRed: 0, scoreBlue: 0, timerSecs: 180 }).catch(errCatch);
-    };
+    // Event Handlers
+    document.getElementById('btnStart').addEventListener('click', () => {
+      startMatch();
+    });
 
-    window.clearRoster = function() {
-      if (confirm("Are you sure you want to clear all connected players?")) {
-        remove(presenceRef).catch(errCatch);
-        resetGame();
+    document.getElementById('btnEnd').addEventListener('click', () => {
+      if (confirm("Are you sure you want to end the current match?")) {
+        clearInterval(timerInterval);
+        update(refState, { status: "ENDED" });
       }
-    };
+    });
+
+    document.getElementById('btnReset').addEventListener('click', () => {
+      clearInterval(timerInterval);
+      initDatabaseState();
+    });
+
+    document.getElementById('btnClearRoster').addEventListener('click', () => {
+      if (confirm("Clear all connected players from the roster?")) {
+        remove(refPresence);
+      }
+    });
+
+    document.getElementById('btnShowWinners').addEventListener('click', () => {
+      let winner = 'draw';
+      if (gameState.redScore > gameState.blueScore) winner = 'red';
+      if (gameState.blueScore > gameState.redScore) winner = 'blue';
+      triggerVictory(winner, "Manual Winner Display Triggered");
+    });
+
+    document.getElementById('btnCloseVictory').addEventListener('click', () => {
+      const victoryModal = document.getElementById('victoryModal');
+      victoryModal.classList.add('hidden');
+      victoryModal.classList.remove('flex');
+    });
+
   </script>
 </body>
 </html>
