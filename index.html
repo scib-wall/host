@@ -88,7 +88,7 @@
       <span class="char">S</span><span class="char">T</span><span class="char">R</span><span class="char">A</span><span class="char">T</span><span class="char">I</span><span class="char">G</span><span class="char">R</span><span class="char">A</span><span class="char">P</span><span class="char">H</span><span class="char">Y</span><span class="char">:</span><span class="char">&nbsp;</span>
       <span class="char">T</span><span class="char">U</span><span class="char">G</span><span class="char">&nbsp;</span><span class="char">O</span><span class="char">F</span><span class="char">&nbsp;</span><span class="char">W</span><span class="char">A</span><span class="char">R</span>
     </div>
-    <div class="timer" id="timerDisplay">03:00</div>
+    <div class="timer" id="timerDisplay">02:00</div>
     <div class="dashboard">
       <div><div class="red-txt" style="font-size: 0.9rem; font-weight: 700; letter-spacing: 1px;">TEAM RED</div><div class="score red-txt" id="scoreRed">0</div><div id="playersRedCount" style="opacity: 0.8; font-size: 0.8rem; font-weight: 700;">0 Players</div><div class="roster-box red-txt" id="rosterRed">Waiting for players...</div></div>
       <div><div class="blue-txt" style="font-size: 0.9rem; font-weight: 700; letter-spacing: 1px;">TEAM BLUE</div><div class="score blue-txt" id="scoreBlue">0</div><div id="playersBlueCount" style="opacity: 0.8; font-size: 0.8rem; font-weight: 700;">0 Players</div><div class="roster-box blue-txt" id="rosterBlue">Waiting for players...</div></div>
@@ -142,14 +142,14 @@
     window.triggerStartSequence=async function(){
       const overlay=document.getElementById("countdownOverlay"),text=document.getElementById("countdownText");overlay.classList.add("active");
       let count=3;ropePosition=0;scoreRed=0;scoreBlue=0;document.getElementById("ropeWrapper").style.transform="translateX(0%)";
-      await remove(pullsRef).catch(errCatch);await set(gameRef,{status:"countdown",countdownVal:count,ropePosition:0,scoreRed:0,scoreBlue:0,timerSecs:180}).catch(errCatch);
+      await remove(pullsRef).catch(errCatch);await set(gameRef,{status:"countdown",countdownVal:count,ropePosition:0,scoreRed:0,scoreBlue:0,timerSecs:120}).catch(errCatch);
       const renderCount=(val)=>{text.classList.remove("countdown-anim");void text.offsetWidth;text.innerText=val;text.classList.add("countdown-anim")};
       renderCount(count);playDramaticCountdownBeep(false);
       const countInterval=setInterval(async()=>{count--;if(count>0){renderCount(count);playDramaticCountdownBeep(false);set(ref(db,"game/state/countdownVal"),count).catch(errCatch)}
       else if(count===0){renderCount("GO!");playDramaticCountdownBeep(true);set(ref(db,"game/state/countdownVal"),"GO").catch(errCatch)}
       else{clearInterval(countInterval);overlay.classList.remove("active");startGame()}},1000);
     };
-    function startGame(){let timeLeft=180;clearInterval(timerInterval);clearInterval(confettiInterval);ropePosition=0;scoreRed=0;scoreBlue=0;document.getElementById("ropeWrapper").style.transform="translateX(0%)";set(gameRef,{status:"playing",ropePosition:0,scoreRed:0,scoreBlue:0,timerSecs:180}).catch(errCatch);
+    function startGame(){let timeLeft=120;clearInterval(timerInterval);clearInterval(confettiInterval);ropePosition=0;scoreRed=0;scoreBlue=0;document.getElementById("ropeWrapper").style.transform="translateX(0%)";set(gameRef,{status:"playing",ropePosition:0,scoreRed:0,scoreBlue:0,timerSecs:120}).catch(errCatch);
       timerInterval=setInterval(()=>{timeLeft--;updateTimerDisplay(timeLeft);set(ref(db,"game/state/timerSecs"),timeLeft).catch(errCatch);
         if(timeLeft<=0){processEndGame("TIME'S UP!",scoreRed>scoreBlue?"A":scoreBlue>scoreRed?"B":"TIE")}
         else if(ropePosition<=-100){processEndGame("FLAG CAPTURED!","A")}else if(ropePosition>=100){processEndGame("FLAG CAPTURED!","B")}},1000)}
@@ -166,7 +166,7 @@
       document.getElementById("timesUpOverlay").classList.add("active")};
     function triggerVictoryFanfare(winner){clearInterval(confettiInterval);if(winner==="TIE"){playSound(300,"sine",0.4,0.8);setTimeout(()=>playSound(400,"sine",0.5,0.8),200);return}playSound(523.25,"triangle",0.25,0.9);setTimeout(()=>playSound(659.25,"triangle",0.25,0.9),120);setTimeout(()=>playSound(783.99,"triangle",0.25,0.9),240);setTimeout(()=>playSound(1046.50,"triangle",0.7,1.0),360);
       const colors=winner==="A"?['#ff5263','#ffffff','#dc2626']:['#38bdf8','#ffffff','#2563eb'];confetti({particleCount:120,spread:100,origin:{y:0.5},colors});confettiInterval=setInterval(()=>{confetti({particleCount:40,angle:60,spread:55,origin:{x:0},colors});confetti({particleCount:40,angle:120,spread:55,origin:{x:1},colors})},650)}
-    window.resetGame=function(){clearInterval(timerInterval);clearInterval(confettiInterval);currentWinner="TIE";ropePosition=0;scoreRed=0;scoreBlue=0;remove(pullsRef).catch(errCatch);document.getElementById("ropeWrapper").style.transform="translateX(0%)";document.getElementById("timesUpOverlay").classList.remove("active");document.getElementById("confirmEndOverlay").classList.remove("active");document.getElementById("countdownOverlay").classList.remove("active");document.getElementById("timerDisplay").className="timer";document.getElementById("timerDisplay").innerText="03:00";document.getElementById("teamAAvatars").classList.remove("jumping");document.getElementById("teamBAvatars").classList.remove("jumping");set(gameRef,{status:"waiting",ropePosition:0,scoreRed:0,scoreBlue:0,timerSecs:180}).catch(errCatch)}
+    window.resetGame=function(){clearInterval(timerInterval);clearInterval(confettiInterval);currentWinner="TIE";ropePosition=0;scoreRed=0;scoreBlue=0;remove(pullsRef).catch(errCatch);document.getElementById("ropeWrapper").style.transform="translateX(0%)";document.getElementById("timesUpOverlay").classList.remove("active");document.getElementById("confirmEndOverlay").classList.remove("active");document.getElementById("countdownOverlay").classList.remove("active");document.getElementById("timerDisplay").className="timer";document.getElementById("timerDisplay").innerText="02:00";document.getElementById("teamAAvatars").classList.remove("jumping");document.getElementById("teamBAvatars").classList.remove("jumping");set(gameRef,{status:"waiting",ropePosition:0,scoreRed:0,scoreBlue:0,timerSecs:120}).catch(errCatch)}
     window.clearRoster=function(){if(confirm("Are you sure you want to clear all connected players?")){remove(presenceRef).catch(errCatch);resetGame()}}
   </script>
 </body>
